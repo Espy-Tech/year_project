@@ -2,16 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intégrale avec Paramètre — Samake Ibrahim · КубГУ 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#080c16">
+    <title>Intégrale avec Paramètre — Samake Ibrahim · КубГУ 2026</title>   `
     <link rel="icon" href="/favicon/favicon.ico" sizes="any">
     <link rel="shortcut icon" href="/favicon/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <style>
+        /* ═══════════════════════════════════════
+           DESIGN TOKENS
+        ═══════════════════════════════════════ */
         :root {
             --bg: #080c16;
             --bg2: #0d1425;
@@ -29,17 +34,29 @@
             --serif: 'Cormorant Garamond', Georgia, serif;
             --sans: 'Inter', sans-serif;
             --mono: 'DM Mono', monospace;
+            --nav-h: 54px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
+        /* ═══════════════════════════════════════
+           RESET & BASE
+        ═══════════════════════════════════════ */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: calc(var(--nav-h) + 8px);
+            -webkit-text-size-adjust: 100%;
+        }
         body {
             font-family: var(--sans);
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
+        img, svg, canvas, video, iframe { max-width: 100%; display: block; }
+        button { cursor: pointer; font-family: inherit; }
 
         body::before {
             content: '';
@@ -51,37 +68,60 @@
             z-index: 0;
         }
 
-        /* NAV */
+        /* ═══════════════════════════════════════
+           SCROLL PROGRESS BAR
+        ═══════════════════════════════════════ */
+        #progress {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent3));
+            z-index: 1000; width: 0%;
+            box-shadow: 0 0 6px var(--accent);
+            transition: width 0.08s linear;
+        }
+
+        /* ═══════════════════════════════════════
+           NAVBAR
+        ═══════════════════════════════════════ */
         nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 200;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            z-index: 500;
             background: rgba(8,12,22,0.92);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px) saturate(1.5);
+            -webkit-backdrop-filter: blur(16px) saturate(1.5);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2.5rem;
-            height: 54px;
+            padding: 0 1.25rem;
+            transition: box-shadow 0.3s;
         }
+        nav.scrolled { box-shadow: 0 4px 32px rgba(0,0,0,0.4); }
 
         .nav-brand {
             font-family: var(--serif);
-            font-size: 17px;
+            font-size: clamp(14px, 3.5vw, 17px);
             font-style: italic;
             color: var(--accent);
+            text-decoration: none;
+            letter-spacing: 0.01em;
+            flex-shrink: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .nav-links {
-            display: flex;
+        .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        /* Desktop nav links — hidden on mobile */
+        .nav-links-desktop {
+            display: none; /* shown via media query on desktop */
             gap: 2px;
             list-style: none;
         }
-
-        .nav-links a {
+        .nav-links-desktop a {
             display: block;
             padding: 5px 13px;
             font-size: 12.5px;
@@ -89,18 +129,13 @@
             text-decoration: none;
             border-radius: 6px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
+        .nav-links-desktop a:hover { color: var(--text2); background: rgba(126,184,247,0.07); }
+        .nav-links-desktop a.active { color: var(--accent); background: rgba(126,184,247,0.1); }
 
-        .nav-links a:hover { color: var(--text2); background: rgba(126,184,247,0.07); }
-        .nav-links a.active { color: var(--accent); background: rgba(126,184,247,0.1); }
-
-        /* LANGUAGE SELECTOR */
-        .lang-selector {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
+        /* Language selector */
+        .lang-selector { display: flex; gap: 4px; align-items: center; }
         .lang-btn {
             padding: 5px 10px;
             font-size: 11px;
@@ -114,13 +149,12 @@
             transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            min-width: 32px;
+            text-align: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        .lang-btn:hover {
-            border-color: var(--border2);
-            color: var(--text2);
-        }
-
+        .lang-btn:hover { border-color: var(--border2); color: var(--text2); }
         .lang-btn.active {
             background: var(--accent);
             border-color: var(--accent);
@@ -128,51 +162,135 @@
             font-weight: 700;
         }
 
-        /* SECTIONS */
+        /* Hamburger button */
+        .ham-btn {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; gap: 5px;
+            width: 40px; height: 40px; background: transparent; border: none;
+            padding: 6px; border-radius: 8px;
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .ham-btn:hover { background: rgba(126,184,247,0.07); }
+        .ham-line {
+            display: block; width: 22px; height: 1.5px;
+            background: var(--text2); border-radius: 2px;
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s, width 0.3s;
+            transform-origin: center;
+        }
+        .ham-btn.open .ham-line:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .ham-btn.open .ham-line:nth-child(2) { opacity: 0; width: 0; }
+        .ham-btn.open .ham-line:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        /* ═══════════════════════════════════════
+           MOBILE MENU OVERLAY
+        ═══════════════════════════════════════ */
+        #mobile-menu {
+            position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0;
+            z-index: 490;
+            background: rgba(8,12,22,0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1.5rem calc(1.5rem + var(--safe-bottom));
+            overflow-y: auto;
+            opacity: 0; pointer-events: none;
+            transform: translateY(-8px);
+            transition: opacity 0.28s cubic-bezier(.4,0,.2,1), transform 0.28s cubic-bezier(.4,0,.2,1);
+        }
+        #mobile-menu.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+        body.menu-open { overflow: hidden; }
+
+        .mob-divider { height: 1px; background: var(--border); margin: 0.5rem 0; }
+        .mob-nav-item {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem 0.5rem; text-decoration: none;
+            color: var(--text2); border-radius: 12px;
+            transition: all 0.18s; border-bottom: 1px solid transparent;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .mob-nav-item:hover, .mob-nav-item:active { color: var(--text); background: rgba(126,184,247,0.06); }
+        .mob-nav-item.active { color: var(--accent); }
+        .mob-nav-num {
+            font-family: var(--mono); font-size: 10px; color: var(--text3);
+            background: rgba(126,184,247,0.08); border-radius: 4px;
+            padding: 3px 7px; min-width: 28px; text-align: center; flex-shrink: 0;
+        }
+        .mob-nav-label { font-size: 15px; font-weight: 500; }
+        .mob-formula-pill {
+            margin-top: auto; padding: 1rem 1.25rem;
+            background: rgba(126,184,247,0.04);
+            border: 1px solid rgba(126,184,247,0.15);
+            border-left: 3px solid var(--accent2);
+            border-radius: 0 12px 12px 0;
+            overflow-x: auto;
+        }
+        .mob-footer-info { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 6px; }
+        .mob-badge {
+            font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+            padding: 4px 10px; border-radius: 100px;
+            border: 1px solid var(--border); color: var(--text3);
+            background: var(--bg3);
+        }
+
+        /* ═══════════════════════════════════════
+           LAYOUT & SECTIONS
+        ═══════════════════════════════════════ */
+        .page-content { position: relative; z-index: 1; }
+
         section {
             position: relative;
             z-index: 1;
             max-width: 1080px;
             margin: 0 auto;
-            padding: 60px 2rem 40px;
+            padding: clamp(48px, 8vw, 72px) clamp(1rem, 5vw, 2rem) clamp(32px, 5vw, 48px);
         }
 
-        #hero {
-            padding-top: 80px;
-            padding-bottom: 50px;
+        #hero { padding-top: calc(var(--nav-h) + clamp(24px, 6vw, 48px)); }
+
+        .s-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 clamp(1rem, 5vw, 2rem);
+            position: relative; z-index: 1;
         }
 
+        /* ═══════════════════════════════════════
+           HERO
+        ═══════════════════════════════════════ */
         .hero-eyebrow {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 11px;
+            font-size: clamp(9.5px, 2.2vw, 11px);
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--accent);
-            margin-bottom: 2.5rem;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
             font-weight: 500;
         }
-
         .hero-eyebrow::before {
             content: '';
-            width: 28px;
-            height: 1px;
+            width: 22px; height: 1px;
             background: var(--accent);
+            flex-shrink: 0;
         }
 
         .hero-integral-row {
             display: flex;
             align-items: flex-end;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: clamp(0.75rem, 3vw, 1.5rem);
+            margin-bottom: clamp(1.2rem, 3.5vw, 2rem);
             flex-wrap: wrap;
         }
 
         .big-integral {
             font-family: var(--serif);
-            font-size: clamp(5rem, 14vw, 9rem);
-            line-height: 1;
+            font-size: clamp(5rem, 20vw, 9rem);
+            line-height: 0.9;
             color: var(--accent);
             opacity: 0.92;
             text-shadow: 0 0 60px rgba(126,184,247,0.25);
@@ -188,52 +306,54 @@
 
         .hero-name {
             font-family: var(--serif);
-            font-size: clamp(2rem, 4.5vw, 3.4rem);
+            font-size: clamp(2rem, 7vw, 3.4rem);
             font-weight: 600;
             color: var(--text);
             line-height: 1.1;
         }
-
         .hero-name em { color: var(--accent2); font-style: italic; }
 
         .hero-dx {
             font-family: var(--serif);
-            font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
             color: var(--text2);
             font-style: italic;
             letter-spacing: 0.04em;
         }
 
         .hero-formula-box {
-            display: inline-block;
+            display: block;
             background: rgba(126,184,247,0.05);
             border: 1px solid rgba(126,184,247,0.18);
             border-left: 3px solid var(--accent2);
             border-radius: 0 10px 10px 0;
-            padding: 1.1rem 1.8rem;
-            margin-bottom: 2.5rem;
-            max-width: 100%;
+            padding: clamp(0.8rem, 3vw, 1.1rem) clamp(1rem, 3.5vw, 1.8rem);
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .hero-formula-box .katex-display,
+        .hero-formula-box .katex {
+            color: var(--text) !important;
+            font-size: clamp(0.9em, 3.5vw, 1.28em);
         }
 
         /* AUTHOR CARD */
         .author-card {
             display: grid;
-            grid-template-columns: 1fr 1px 1fr 1px 1fr;
+            grid-template-columns: 1fr;
             background: var(--card);
             border: 1px solid var(--border2);
             border-radius: 14px;
             overflow: hidden;
-            max-width: 720px;
-            margin-bottom: 2.5rem;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
         }
-
-        .author-sep { background: var(--border2); }
-
+        .author-sep { background: var(--border2); display: none; }
         .author-cell {
-            padding: 1.4rem 1.8rem;
+            padding: clamp(1rem, 3.5vw, 1.4rem) clamp(1rem, 4vw, 1.8rem);
+            border-bottom: 1px solid var(--border);
         }
-
+        .author-cell:last-child { border-bottom: 0; }
         .author-cell .ac-label {
             font-size: 9.5px;
             font-weight: 600;
@@ -242,49 +362,46 @@
             color: var(--text3);
             margin-bottom: 7px;
         }
-
         .author-cell .ac-value {
             font-family: var(--serif);
-            font-size: 1.25rem;
+            font-size: clamp(1.1rem, 4vw, 1.25rem);
             font-weight: 600;
             color: var(--text);
             line-height: 1.2;
         }
-
-        .author-cell .ac-sub {
-            font-size: 11px;
-            color: var(--text2);
-            margin-top: 4px;
-        }
-
+        .author-cell .ac-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
         .author-cell.accent .ac-value { color: var(--accent); }
         .author-cell.accent2 .ac-value { color: var(--accent2); }
 
+        /* Quick links */
         .quick-links {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
-            flex-wrap: wrap;
         }
-
         .ql {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 6px;
-            padding: 7px 15px;
+            padding: clamp(8px, 2.5vw, 10px) clamp(10px, 3vw, 15px);
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 100px;
-            font-size: 12.5px;
+            font-size: clamp(11.5px, 2.8vw, 12.5px);
             color: var(--text2);
             text-decoration: none;
             transition: all 0.2s;
-            cursor: pointer;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 44px;
         }
-
-        .ql:hover { border-color: var(--accent); color: var(--accent); }
+        .ql:hover, .ql:active { border-color: var(--accent); color: var(--accent); }
         .ql .num { font-family: var(--mono); font-size: 10px; color: var(--text3); }
 
-        /* SECTION HEADINGS */
+        /* ═══════════════════════════════════════
+           SECTION HEADINGS
+        ═══════════════════════════════════════ */
         .s-label {
             font-size: 10px;
             letter-spacing: 0.16em;
@@ -295,126 +412,95 @@
             align-items: center;
             gap: 9px;
         }
-
         .s-label::before {
             content: '';
-            width: 20px;
-            height: 1px;
+            width: 18px; height: 1px;
             background: var(--accent);
         }
-
         .s-title {
             font-family: var(--serif);
-            font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+            font-size: clamp(1.65rem, 5.5vw, 2.6rem);
             font-weight: 600;
             color: var(--text);
             line-height: 1.2;
             margin-bottom: 1rem;
         }
-
         .s-intro {
-            font-size: 15px;
+            font-size: clamp(13.5px, 3.2vw, 15px);
             line-height: 1.8;
             color: var(--text2);
             max-width: 680px;
-            margin-bottom: 2.5rem;
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
         }
 
         .fade-in {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.55s ease, transform 0.55s ease;
+            transform: translateY(18px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
+        .fade-in.visible { opacity: 1; transform: none; }
 
-        .fade-in.visible {
-            opacity: 1;
-            transform: none;
-        }
-
-        /* MATH BLOCKS */
+        /* ═══════════════════════════════════════
+           MATH BLOCKS
+        ═══════════════════════════════════════ */
         .math-block {
             background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.4rem 2rem;
-            margin: 1.4rem 0;
-            text-align: center;
+            padding: clamp(0.9rem, 3vw, 1.4rem) clamp(1rem, 3.5vw, 2rem);
+            margin: 1.2rem 0;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-
         .math-block .mb-label {
             font-size: 10px;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             color: var(--text3);
-            margin-bottom: 0.9rem;
+            margin-bottom: 0.8rem;
             text-align: left;
         }
-
         .math-block.highlight-box {
             background: rgba(126,184,247,0.04);
             border-color: rgba(126,184,247,0.25);
             border-left: 3px solid var(--accent);
             border-radius: 0 12px 12px 0;
         }
-
         .math-block.result-box {
             background: linear-gradient(135deg, rgba(126,184,247,0.06), rgba(110,231,183,0.04));
             border-color: rgba(126,184,247,0.3);
-            padding: 2rem;
+            padding: clamp(1.2rem, 4vw, 2rem);
         }
-
-        .math-block.result-box .mb-label {
-            text-align: center;
-            color: var(--accent3);
-            font-size: 11px;
-        }
-
-        .math-block .katex-display,
-        .math-block .katex {
-            color: var(--text) !important;
-            font-size: 1.15em;
-        }
-
+        .math-block.result-box .mb-label { text-align: center; color: var(--accent3); font-size: 11px; }
+        .math-block .katex-display, .math-block .katex { color: var(--text) !important; }
         .math-block .katex-display { margin: 0.3em 0; overflow-x: auto; }
 
-        .hero-formula-box .katex-display,
-        .hero-formula-box .katex {
-            color: var(--text) !important;
-            font-size: 1.28em;
-        }
-
-        .task-text .katex,
-        .step-body .katex,
-        .deriv-content .katex,
-        .s-intro .katex,
-        .concl-card .katex,
-        .chart-card h3 .katex {
+        .task-text .katex, .step-body .katex, .deriv-content .katex,
+        .s-intro .katex, .concl-card .katex, .chart-card h3 .katex {
             color: var(--accent) !important;
             font-size: 0.97em;
         }
 
-        /* TASKS */
+        /* ═══════════════════════════════════════
+           TASKS
+        ═══════════════════════════════════════ */
         .task-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 14px;
-            margin: 2rem 0;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 1.5rem 0;
         }
-
         .task-item {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 11px;
-            padding: 1.1rem 1.4rem;
+            padding: 1rem 1.2rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.85rem;
             align-items: flex-start;
             transition: border-color 0.2s;
         }
-
         .task-item:hover { border-color: var(--border2); }
-
         .task-num {
             font-family: var(--mono);
             font-size: 10px;
@@ -427,16 +513,12 @@
             flex-shrink: 0;
             margin-top: 1px;
         }
-
-        .task-text {
-            font-size: 13.5px;
-            line-height: 1.65;
-            color: var(--text2);
-        }
-
+        .task-text { font-size: clamp(12.5px, 3vw, 13.5px); line-height: 1.65; color: var(--text2); }
         .task-text strong { color: var(--text); font-weight: 500; }
 
-        /* STEPS */
+        /* ═══════════════════════════════════════
+           STEPS
+        ═══════════════════════════════════════ */
         .steps-list {
             display: flex;
             flex-direction: column;
@@ -445,41 +527,20 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
-
         .step {
             display: flex;
-            gap: 1.2rem;
+            gap: 1rem;
             align-items: flex-start;
-            padding: 1.1rem 1.5rem;
+            padding: 1rem 1.2rem;
             background: var(--card);
             transition: background 0.2s;
         }
-
         .step:hover { background: var(--bg3); }
-
-        .step-n {
-            font-family: var(--mono);
-            font-size: 13px;
-            color: var(--accent);
-            min-width: 24px;
-            margin-top: 1px;
-        }
-
-        .step-body h4 {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 3px;
-        }
-
-        .step-body p {
-            font-size: 12.5px;
-            color: var(--text2);
-            line-height: 1.6;
-        }
-
+        .step-n { font-family: var(--mono); font-size: 13px; color: var(--accent); min-width: 22px; margin-top: 1px; }
+        .step-body h4 { font-size: clamp(12.5px, 3vw, 13.5px); font-weight: 500; color: var(--text); margin-bottom: 3px; }
+        .step-body p { font-size: clamp(12px, 2.8vw, 12.5px); color: var(--text2); line-height: 1.6; }
         .step-body code {
             font-family: var(--mono);
             font-size: 11.5px;
@@ -489,380 +550,230 @@
             border-radius: 4px;
         }
 
-        /* DERIVATION */
-        .derivation {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin: 2rem 0;
-        }
-
-        .deriv-step {
-            display: grid;
-            grid-template-columns: 28px 1fr;
-            gap: 1rem;
-            align-items: start;
-        }
-
+        /* ═══════════════════════════════════════
+           DERIVATION
+        ═══════════════════════════════════════ */
+        .derivation { display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0; }
+        .deriv-step { display: grid; grid-template-columns: 26px 1fr; gap: 0.75rem; align-items: start; }
         .deriv-bullet {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+            width: 26px; height: 26px; border-radius: 50%;
             background: rgba(126,184,247,0.1);
             border: 1px solid rgba(126,184,247,0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--accent);
-            flex-shrink: 0;
-            margin-top: 2px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono); font-size: 10px; color: var(--accent);
+            flex-shrink: 0; margin-top: 2px;
         }
+        .deriv-content h4 { font-size: clamp(12.5px, 3vw, 13.5px); font-weight: 500; color: var(--text); margin-bottom: 4px; }
+        .deriv-content p { font-size: clamp(12px, 2.8vw, 13px); color: var(--text2); line-height: 1.7; margin-bottom: 4px; }
 
-        .deriv-content h4 {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 5px;
-        }
-
-        .deriv-content p {
-            font-size: 13px;
-            color: var(--text2);
-            line-height: 1.7;
-            margin-bottom: 4px;
-        }
-
-        /* LIBS */
+        /* ═══════════════════════════════════════
+           LIBS & CODE
+        ═══════════════════════════════════════ */
         .libs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
-            gap: 11px;
-            margin: 2rem 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 1.5rem 0;
         }
-
         .lib-card {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 9px;
-            padding: 0.9rem 1.1rem;
+            padding: 0.85rem 1rem;
             display: flex;
-            gap: 11px;
+            gap: 10px;
             align-items: center;
         }
-
         .lib-icon {
             font-family: var(--mono);
-            font-size: 10px;
+            font-size: 9.5px;
             color: var(--accent3);
             background: rgba(110,231,183,0.09);
             border-radius: 5px;
-            padding: 3px 7px;
+            padding: 3px 6px;
             white-space: nowrap;
             flex-shrink: 0;
         }
-
-        .lib-info h4 {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 1px;
-        }
-
-        .lib-info p {
-            font-size: 11.5px;
-            color: var(--text2);
-        }
+        .lib-info h4 { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+        .lib-info p { font-size: 11px; color: var(--text2); }
 
         pre.code-block {
             background: #060910;
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: clamp(1rem, 3.5vw, 1.5rem);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             font-family: var(--mono);
-            font-size: 12.5px;
+            font-size: clamp(11px, 2.8vw, 12.5px);
             line-height: 1.85;
             color: #cdd6f4;
-            margin: 1.5rem 0;
+            margin: 1.2rem 0;
+            white-space: pre;
         }
-
         .kw { color: #89b4fa; }
         .type { color: #cba6f7; }
         .fn { color: #a6e3a1; }
         .cmt { color: #45475a; font-style: italic; }
         .num { color: #fab387; }
 
-        /* RESULTS */
+        /* ═══════════════════════════════════════
+           DASHBOARD — RESULTS
+        ═══════════════════════════════════════ */
+        .dashboard-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 0 48px rgba(0,0,0,0.4);
+        }
+        .dashboard-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1rem; background: var(--bg3);
+            border-bottom: 1px solid var(--border); gap: 8px;
+        }
+        .db-dots { display: flex; gap: 5px; }
+        .db-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .db-status {
+            font-family: var(--mono); font-size: 9.5px; color: var(--accent3);
+            display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+        }
+        .db-status-dot {
+            width: 5px; height: 5px; border-radius: 50%; background: var(--accent3);
+            box-shadow: 0 0 5px var(--accent3);
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
         .controls-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            align-items: center;
-            margin-bottom: 1.8rem;
-            padding: 1.2rem 1.5rem;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            display: flex; flex-direction: column; gap: 12px;
+            padding: 1.1rem 1.2rem;
+            background: var(--card); border-bottom: 1px solid var(--border);
         }
-
-        @media (max-width: 768px) {
-            .controls-bar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-            }
-            .controls-bar > div:nth-child(2) {
-                display: none;
-            }
-            .ctrl-group {
-                width: 100%;
-            }
-        }
-
-        .ctrl-group {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            flex: 1;
-            min-width: 150px;
-        }
-
+        .ctrl-group { display: flex; flex-direction: column; gap: 7px; }
         .ctrl-group label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text3);
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--text3);
+        }
+        .ctrl-row { display: flex; align-items: center; gap: 12px; }
+        .ctrl-row input[type="range"] { flex: 1; }
+        .x-val-display {
+            font-family: var(--mono); font-size: 13px; color: var(--accent);
+            font-weight: 500; min-width: 52px; text-align: right;
         }
 
-        .ctrl-group input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            height: 4px; background: var(--bg3); border-radius: 2px; outline: none;
             width: 100%;
-            height: 3px;
-            background: var(--bg3);
-            border-radius: 2px;
-            outline: none;
         }
-
-        .ctrl-group input[type="range"]::-webkit-slider-thumb {
+        input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            border: 2px solid var(--bg);
-            box-shadow: 0 0 0 2px rgba(126,184,247,0.3);
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--accent); border: 2px solid var(--bg);
+            box-shadow: 0 0 0 3px rgba(126,184,247,0.25);
+            touch-action: none;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--accent); border: 2px solid var(--bg); cursor: pointer;
         }
 
-        .ctrl-group input[type="range"]::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            border: 2px solid var(--bg);
-        }
-
-        .n-btns {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
+        .n-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .n-btn {
-            padding: 5px 13px;
-            font-size: 12.5px;
-            font-family: var(--mono);
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            color: var(--text2);
-            cursor: pointer;
-            transition: all 0.18s;
+            padding: 10px 4px; font-size: 12.5px; font-family: var(--mono);
+            background: transparent; border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text2); transition: all 0.18s;
+            text-align: center; min-height: 44px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
-
         .n-btn:hover { border-color: var(--border2); color: var(--text); }
-        .n-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--bg);
-            font-weight: 600;
-        }
+        .n-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
 
+        /* Metrics row */
         .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
-            gap: 11px;
-            margin-bottom: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .metrics-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .metrics-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .metric-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem 1.2rem;
-        }
-
-        .metric-card .m-lbl {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.09em;
-            color: var(--text3);
-            margin-bottom: 6px;
-        }
-
-        .metric-card .m-val {
-            font-family: var(--mono);
-            font-size: 19px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .metric-card .m-val.err { color: var(--red); }
-        .metric-card .m-val.ok { color: var(--accent3); }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 900px) {
-            .charts-grid { grid-template-columns: 1fr; }
-        }
-        
-        @media (max-width: 680px) {
-            .charts-grid { grid-template-columns: 1fr; }
-            .ctrl-group { min-width: 120px; }
-            .controls-bar { gap: 10px; padding: 0.8rem 1rem; }
-            .metric-card { padding: 0.8rem 1rem; }
-            .metric-card .m-val { font-size: 16px; }
-        }
-
-        .chart-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.2rem;
-        }
-
-        .chart-card h3 {
-            font-size: 12.5px;
-            font-weight: 500;
-            color: var(--text2);
-            margin-bottom: 1rem;
-        }
-
-        .chart-wrap {
-            position: relative;
-            width: 100%;
-            height: 230px;
-        }
-
-        .table-scroll {
-            overflow-x: auto;
-            margin-top: 2rem;
-        }
-
-        table.data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            font-family: var(--mono);
-        }
-
-        table.data-table th {
-            text-align: right;
-            padding: 8px 11px;
-            font-size: 10.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            color: var(--text3);
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 8px; padding: 1rem 1.2rem;
             border-bottom: 1px solid var(--border);
-            font-family: var(--sans);
-            font-weight: 500;
         }
+        .metric-card {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 10px; padding: 0.9rem 1rem;
+        }
+        .metric-card .m-lbl {
+            font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text3); margin-bottom: 6px;
+        }
+        .metric-card .m-val {
+            font-family: var(--mono); font-size: clamp(15px, 4vw, 18px);
+            font-weight: 500; color: var(--text); word-break: break-all;
+        }
+        .metric-card .m-val.ok { color: var(--accent3); }
+        .metric-card .m-val.err { color: var(--red); }
 
+        /* Charts */
+        .charts-section { padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 12px; }
+        .chart-card {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1rem;
+        }
+        .chart-card h3 { font-size: 12.5px; font-weight: 500; color: var(--text2); margin-bottom: 0.8rem; }
+        .chart-wrap { position: relative; width: 100%; height: clamp(180px, 45vw, 240px); }
+
+        /* Table */
+        .table-section { padding: 0 1.2rem 1.2rem; }
+        .table-label {
+            font-size: 11.5px; font-weight: 500; color: var(--text2);
+            margin-bottom: 0.7rem; padding-top: 0.8rem;
+        }
+        .table-scroll-wrap {
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            border-radius: 12px; border: 1px solid var(--border);
+        }
+        table.data-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 11.5px; font-family: var(--mono); min-width: 420px;
+        }
+        table.data-table th {
+            text-align: right; padding: 8px 10px; font-size: 9.5px;
+            text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3);
+            border-bottom: 1px solid var(--border); font-family: var(--sans); font-weight: 500;
+            background: var(--bg3); position: sticky; top: 0; z-index: 1;
+            white-space: nowrap;
+        }
         table.data-table th:first-child { text-align: left; }
-
         table.data-table td {
-            text-align: right;
-            padding: 6px 11px;
-            border-bottom: 1px solid rgba(126,184,247,0.05);
-            color: var(--text2);
-            transition: background 0.15s;
+            text-align: right; padding: 5px 10px;
+            border-bottom: 1px solid rgba(126,184,247,0.05); color: var(--text2);
         }
-
-        table.data-table td:first-child {
-            text-align: left;
-            color: var(--text);
-            font-family: var(--sans);
-        }
-
+        table.data-table td:first-child { text-align: left; color: var(--text); font-family: var(--sans); }
         table.data-table tr:hover td { background: rgba(126,184,247,0.04); }
         table.data-table tr.highlight td { background: rgba(126,184,247,0.09); color: var(--text); }
         table.data-table .err-val { color: var(--red); }
 
-        /* CONCLUSION */
+        /* ═══════════════════════════════════════
+           CONCLUSION
+        ═══════════════════════════════════════ */
         .concl-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
-            gap: 14px;
-            margin: 2rem 0;
+            display: grid; grid-template-columns: 1fr;
+            gap: 12px; margin: 1.5rem 0;
         }
-
         .concl-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            padding: 1.4rem;
-            position: relative;
-            overflow: hidden;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 13px; padding: 1.2rem;
+            position: relative; overflow: hidden;
         }
-
         .concl-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 3px;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
         }
-
         .concl-card.blue::before { background: var(--accent); }
         .concl-card.orange::before { background: var(--accent2); }
         .concl-card.green::before { background: var(--accent3); }
+        .concl-card h3 { font-size: 13.5px; font-weight: 500; color: var(--text); margin-bottom: 7px; }
+        .concl-card p { font-size: 12.5px; color: var(--text2); line-height: 1.7; }
 
-        .concl-card h3 {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 7px;
-        }
-
-        .concl-card p {
-            font-size: 12.5px;
-            color: var(--text2);
-            line-height: 1.7;
-        }
-
+        /* Convergence error table */
         .err-table {
             display: grid;
             grid-template-columns: 60px 1fr 110px;
@@ -871,58 +782,89 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
-
         .err-row { display: contents; }
-
-        .err-row > div {
-            background: var(--card);
-            padding: 11px 16px;
-            font-size: 13px;
-        }
-
-        .err-row > div:nth-child(1) {
-            font-family: var(--mono);
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .err-row > div:nth-child(3) {
-            font-family: var(--mono);
-            color: var(--red);
-            text-align: right;
-        }
-
+        .err-row > div { background: var(--card); padding: 10px 14px; font-size: 13px; }
+        .err-row > div:nth-child(1) { font-family: var(--mono); color: var(--accent); font-weight: 500; }
+        .err-row > div:nth-child(3) { font-family: var(--mono); color: var(--red); text-align: right; }
         .err-row.hdr > div {
-            background: var(--bg3);
-            color: var(--text3);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.09em;
+            background: var(--bg3); color: var(--text3);
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em;
         }
-
-        .bar-wrap { display: flex; align-items: center; }
+        .bar-wrap { display: flex; align-items: center; padding-right: 8px; }
         .bar { height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--red), var(--accent2)); }
 
+        /* ═══════════════════════════════════════
+           FOOTER
+        ═══════════════════════════════════════ */
         footer {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 2rem;
+            position: relative; z-index: 1; text-align: center;
+            padding: clamp(1.5rem, 4vw, 2.5rem) 1.5rem calc(1.5rem + var(--safe-bottom));
             border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--text3);
+            font-size: 12px; color: var(--text3);
+        }
+        footer span { color: var(--accent); }
+
+        /* ═══════════════════════════════════════
+           TABLET OVERRIDES (600px+)
+        ═══════════════════════════════════════ */
+        @media (min-width: 600px) {
+            .quick-links { grid-template-columns: repeat(3, 1fr); }
+            .task-grid { grid-template-columns: repeat(2, 1fr); }
+            .libs-grid { grid-template-columns: repeat(3, 1fr); }
+            .concl-grid { grid-template-columns: repeat(3, 1fr); }
+            .metrics-row { grid-template-columns: repeat(4, 1fr); }
+            .author-card { grid-template-columns: 1fr 1px 1fr 1px 1fr; }
+            .author-cell { border-bottom: 0; border-right: 1px solid var(--border); }
+            .author-cell:last-child { border-right: 0; }
+            .author-sep { background: var(--border2); display: block; }
         }
 
-        footer span { color: var(--accent); }
+        /* ═══════════════════════════════════════
+           DESKTOP (1024px+)
+        ═══════════════════════════════════════ */
+        @media (min-width: 1024px) {
+            .ham-btn { display: none; }
+            .nav-links-desktop { display: flex; }
+            nav { padding: 0 2.5rem; }
+            .nav-brand { font-size: 17px; }
+            .charts-section { display: grid; grid-template-columns: 1fr 1fr; }
+            .controls-bar { flex-direction: row; align-items: center; }
+            .ctrl-group { flex: 1; }
+            .task-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ═══════════════════════════════════════
+           VERY SMALL (max 359px)
+        ═══════════════════════════════════════ */
+        @media (max-width: 359px) {
+            .quick-links { grid-template-columns: 1fr; }
+            .n-btns { grid-template-columns: repeat(2, 1fr); }
+            .big-integral { font-size: 4.5rem; }
+        }
+
+        /* ═══════════════════════════════════════
+           REDUCED MOTION
+        ═══════════════════════════════════════ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; animation: none !important; }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="nav-brand">∫ Samake Ibrahim · КубГУ</div>
-    <ul class="nav-links">
+<!-- SCROLL PROGRESS -->
+<div id="progress"></div>
+
+<!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+<nav id="navbar">
+    <a href="#hero" class="nav-brand">∫ Samake Ibrahim · КубГУ</a>
+
+    <!-- Desktop links -->
+    <ul class="nav-links-desktop" id="desktopLinks">
         <li><a href="#hero" class="active" data-i18n="nav_home">Accueil</a></li>
         <li><a href="#objectif" data-i18n="nav_objective">Objectif</a></li>
         <li><a href="#methode" data-i18n="nav_method">Méthode</a></li>
@@ -931,12 +873,69 @@
         <li><a href="#resultats" data-i18n="nav_results">Résultats</a></li>
         <li><a href="#conclusion" data-i18n="nav_conclusion">Conclusion</a></li>
     </ul>
-    <div class="lang-selector">
-        <button class="lang-btn active" data-lang="fr">FR</button>
-        <button class="lang-btn" data-lang="ru">RU</button>
-        <button class="lang-btn" data-lang="en">EN</button>
+
+    <div class="nav-right">
+        <div class="lang-selector">
+            <button class="lang-btn active" data-lang="fr">FR</button>
+            <button class="lang-btn" data-lang="ru">RU</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <button class="ham-btn" id="hamBtn" aria-label="Menu" aria-expanded="false">
+            <span class="ham-line"></span>
+            <span class="ham-line"></span>
+            <span class="ham-line"></span>
+        </button>
     </div>
 </nav>
+
+<!-- ══════════════════════════════════════
+     MOBILE MENU OVERLAY
+══════════════════════════════════════ -->
+<div id="mobile-menu" role="navigation" aria-label="Mobile menu">
+    <a href="#hero" class="mob-nav-item active" data-mob-link>
+        <span class="mob-nav-num">∫</span>
+        <span class="mob-nav-label" data-i18n="nav_home">Accueil</span>
+    </a>
+    <div class="mob-divider"></div>
+    <a href="#objectif" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">01</span>
+        <span class="mob-nav-label" data-i18n="nav_objective">Objectif</span>
+    </a>
+    <a href="#methode" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">02</span>
+        <span class="mob-nav-label" data-i18n="nav_method">Méthode</span>
+    </a>
+    <a href="#analytique" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">03</span>
+        <span class="mob-nav-label" data-i18n="nav_analytical">Analytique</span>
+    </a>
+    <a href="#programme" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">04</span>
+        <span class="mob-nav-label" data-i18n="nav_program">Programme C++</span>
+    </a>
+    <a href="#resultats" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">05</span>
+        <span class="mob-nav-label" data-i18n="nav_results">Résultats</span>
+    </a>
+    <a href="#conclusion" class="mob-nav-item" data-mob-link>
+        <span class="mob-nav-num">06</span>
+        <span class="mob-nav-label" data-i18n="nav_conclusion">Conclusion</span>
+    </a>
+    <div class="mob-divider" style="margin-top:1rem;"></div>
+    <div class="mob-formula-pill" style="margin-top:1rem;">
+        \[\displaystyle y(x) = \int_{0}^{1}\sqrt{\dfrac{x-t}{x+t}}\,\mathrm{d}t,\quad x\in[1;3]\]
+    </div>
+    <div class="mob-footer-info">
+        <span class="mob-badge">02.03.03 MOAIS</span>
+        <span class="mob-badge">КубГУ · 2026</span>
+        <span class="mob-badge">O(1/N) Convergence</span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE CONTENT
+══════════════════════════════════════ -->
+<div class="page-content">
 
 <!-- HERO -->
 <section id="hero">
@@ -980,11 +979,13 @@
     </div>
 </section>
 
+<div class="s-divider"></div>
+
 <!-- OBJECTIF -->
 <section id="objectif">
     <div class="fade-in">
         <div class="s-label">01</div>
-        <h2 class="s-title">Énoncé du problème</h2>
+        <h2 class="s-title" data-i18n="task_statement">Énoncé du problème</h2>
         <p class="s-intro">Calcul numérique de la fonction définie par l'intégrale avec paramètre, comparaison avec la solution analytique exacte et analyse de la convergence.</p>
         <div class="task-grid">
             <div class="task-item"><div class="task-num">01</div><div class="task-text"><strong>Calcul de \(y(x_i)\)</strong> pour 21 points \(x_i\in[1;3]\), pas \(= 0{,}1\)</div></div>
@@ -1005,12 +1006,14 @@
     </div>
 </section>
 
+<div class="s-divider"></div>
+
 <!-- MÉTHODE -->
 <section id="methode">
     <div class="fade-in">
         <div class="s-label">02</div>
-        <h2 class="s-title">Méthode des rectangles droits</h2>
-        <p class="s-intro">Approche numérique classique où la hauteur de chaque rectangle est la valeur de la fonction en l'extrémité droite du sous-intervalle.</p>
+        <h2 class="s-title" data-i18n="method_title">Méthode des rectangles droits</h2>
+        <p class="s-intro" data-i18n="method_intro">Approche numérique classique où la hauteur de chaque rectangle est la valeur de la fonction en l'extrémité droite du sous-intervalle.</p>
         <div class="math-block">
             <div class="mb-label">Formule de quadrature</div>
             \[y_{\text{num}}(x)\;\approx\; h\sum_{k=1}^{N}f(t_k,\,x),\qquad t_k = k\,h,\quad h=\frac{1}{N}\]
@@ -1034,27 +1037,29 @@
     </div>
 </section>
 
+<div class="s-divider"></div>
+
 <!-- ANALYTIQUE -->
 <section id="analytique">
     <div class="fade-in">
         <div class="s-label">03</div>
-        <h2 class="s-title">Solution analytique exacte</h2>
-        <p class="s-intro">Par la substitution \(u=\sqrt{(x-t)/(x+t)}\), on transforme l'intégrale en arctangente et fonctions algébriques, puis on évalue aux bornes transformées.</p>
+        <h2 class="s-title" data-i18n="analytical_title">Solution analytique exacte</h2>
+        <p class="s-intro" data-i18n="analytical_intro">Par la substitution \(u=\sqrt{(x-t)/(x+t)}\), on transforme l'intégrale en arctangente et fonctions algébriques, puis on évalue aux bornes transformées.</p>
         <div class="derivation">
             <div class="deriv-step">
                 <div class="deriv-bullet">1</div>
                 <div class="deriv-content">
                     <h4>Substitution</h4>
-                    <p>On pose \(u=\sqrt{\dfrac{x-t}{x+t}}\), donc \(u^2=\dfrac{x-t}{x+t}\). En isolant \(t\) :</p>
-                    <div class="math-block" style="margin:0.5rem 0;padding:0.9rem 1.4rem;">\[t \;=\; x\,\frac{1-u^2}{1+u^2}\]</div>
+                    <p>On pose \(u=\sqrt{\dfrac{x-t}{x+t}}\), donc \(t = x\,\dfrac{1-u^2}{1+u^2}\)</p>
+                    <div class="math-block" style="margin:0.5rem 0;padding:0.9rem 1.4rem;">\[t = x\,\frac{1-u^2}{1+u^2}\]</div>
                 </div>
             </div>
             <div class="deriv-step">
                 <div class="deriv-bullet">2</div>
                 <div class="deriv-content">
-                    <h4>Différentielle de \(t\)</h4>
-                    <p>Règle du quotient appliquée à \(t(u)\) :</p>
-                    <div class="math-block" style="margin:0.5rem 0;padding:0.9rem 1.4rem;">\[dt \;=\; x\cdot\frac{-4u}{(1+u^2)^2}\,du\]</div>
+                    <h4>Calcul de dt</h4>
+                    <p>Par différentiation :</p>
+                    <div class="math-block" style="margin:0.5rem 0;padding:0.9rem 1.4rem;">\[dt = -\frac{4xu}{(1+u^2)^2}\,du\]</div>
                 </div>
             </div>
             <div class="deriv-step">
@@ -1089,12 +1094,14 @@
     </div>
 </section>
 
+<div class="s-divider"></div>
+
 <!-- PROGRAMME C++ -->
 <section id="programme">
     <div class="fade-in">
         <div class="s-label">04</div>
-        <h2 class="s-title">Description du programme C++</h2>
-        <p class="s-intro">Le programme utilise des fonctions modulaires : sous-intégrande, méthode numérique, solution exacte, boucle principale avec export CSV.</p>
+        <h2 class="s-title" data-i18n="program_title">Description du programme C++</h2>
+        <p class="s-intro" data-i18n="program_intro">Le programme utilise des fonctions modulaires : sous-intégrande, méthode numérique, solution exacte, boucle principale avec export CSV.</p>
         <div class="libs-grid">
             <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>iostream</h4><p>Entrée/sortie console</p></div></div>
             <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>fstream</h4><p>Fichiers CSV</p></div></div>
@@ -1125,97 +1132,112 @@
     </div>
 </section>
 
+<div class="s-divider"></div>
+
 <!-- RÉSULTATS -->
 <section id="resultats">
     <div class="fade-in">
         <div class="s-label">05</div>
-        <h2 class="s-title">Résultats et Dashboard Interactif</h2>
-        <p class="s-intro">Explorez les résultats en temps réel. Ajustez le paramètre x et le nombre de subdivisions N pour voir comment l'erreur converge vers zéro.</p>
-        
-        <!-- Controls -->
-        <div class="controls-bar">
-            <div class="ctrl-group" style="flex: 0.6; min-width: 200px;">
-                <label data-i18n="param_x">Paramètre X</label>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="range" id="xSlider" min="1" max="3" step="0.1" value="2" style="flex: 1;">
-                    <div style="font-size: 13px; color: var(--accent); font-weight: 500; min-width: 50px;">X = <span id="xValue">2.0</span></div>
-                </div>
-            </div>
-            <div style="border-left: 1px solid var(--border);"></div>
-            <div class="ctrl-group" style="flex: 1; min-width: auto;">
-                <label data-i18n="subdivisions_n">Nombre de subdivisions N</label>
-                <div class="n-btns" style="justify-content: flex-start;">
-                    <button class="n-btn" data-n="5">N=5</button>
-                    <button class="n-btn" data-n="10">N=10</button>
-                    <button class="n-btn active" data-n="20">N=20</button>
-                    <button class="n-btn" data-n="50">N=50</button>
-                </div>
-            </div>
-        </div>
+        <h2 class="s-title" data-i18n="results_title">Résultats et Dashboard Interactif</h2>
+        <p class="s-intro" data-i18n="results_intro">Explorez les résultats en temps réel. Ajustez le paramètre x et le nombre de subdivisions N pour voir comment l'erreur converge vers zéro.</p>
 
-        <!-- Metrics - 4 cards in row -->
-        <div class="metrics-row">
-            <div class="metric-card">
-                <div class="m-lbl" data-i18n="exact_solution">Solution Exacte</div>
-                <div class="m-val ok" id="exactValue">0.0000</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-lbl" data-i18n="numerical_solution">Solution Numérique</div>
-                <div class="m-val" id="numValue">0.0000</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-lbl" data-i18n="local_error">Erreur Locale</div>
-                <div class="m-val err" id="errAbsValue">0.0000</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-lbl" data-i18n="max_error">ΔMax Global</div>
-                <div class="m-val err" id="errMaxValue">0.0000</div>
-            </div>
-        </div>
-
-        <!-- Charts Grid -->
-        <div class="charts-grid">
-            <!-- Chart 1: Curves -->
-            <div class="chart-card">
-                <h3><span data-i18n="curves">Courbes</span> <span style="color: var(--text2); font-weight: 400;">y<sub style="font-size: 0.85em;">exact</sub>(x) vs y<sub style="font-size: 0.85em;">num</sub>(x)</span></h3>
-                <div class="chart-wrap">
-                    <canvas id="chartCurves"></canvas>
+        <div class="dashboard-card">
+            <!-- Topbar -->
+            <div class="dashboard-topbar">
+                <div class="db-dots">
+                    <div class="db-dot" style="background:#f87171;"></div>
+                    <div class="db-dot" style="background:#f0c070;"></div>
+                    <div class="db-dot" style="background:#6ee7b7;"></div>
+                </div>
+                <div style="font-family:var(--mono);font-size:9.5px;color:var(--text3);letter-spacing:0.06em;">
+                    NIP · Interactive Dashboard
+                </div>
+                <div class="db-status">
+                    <div class="db-status-dot"></div>
+                    <span style="font-size:9px;">Live</span>
                 </div>
             </div>
-            
-            <!-- Chart 2: Convergence -->
-            <div class="chart-card">
-                <h3><span data-i18n="convergence_chart">Convergence</span> <span style="color: var(--text2); font-weight: 400;">Δ<sub style="font-size: 0.85em;">max</sub>(N)</span></h3>
-                <div class="chart-wrap">
-                    <canvas id="chartConvergence"></canvas>
+
+            <!-- Controls -->
+            <div class="controls-bar">
+                <div class="ctrl-group">
+                    <label data-i18n="param_x">Paramètre X</label>
+                    <div class="ctrl-row">
+                        <input type="range" id="xSlider" min="1" max="3" step="0.1" value="2">
+                        <div class="x-val-display">X = <span id="xValue">2.0</span></div>
+                    </div>
+                </div>
+                <div class="ctrl-group">
+                    <label data-i18n="subdivisions_n">Nombre de subdivisions N</label>
+                    <div class="n-btns">
+                        <button class="n-btn" data-n="5">N=5</button>
+                        <button class="n-btn" data-n="10">N=10</button>
+                        <button class="n-btn active" data-n="20">N=20</button>
+                        <button class="n-btn" data-n="50">N=50</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Data Table -->
-        <div class="table-scroll">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th data-i18n="data_table_x">x</th>
-                        <th data-i18n="data_table_exact">Exact</th>
-                        <th data-i18n="data_table_num">Num (N=20)</th>
-                        <th data-i18n="data_table_error">Erreur</th>
-                    </tr>
-                </thead>
-                <tbody id="dataTable">
-                </tbody>
-            </table>
+            <!-- Metrics -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="m-lbl" data-i18n="exact_solution">Solution Exacte</div>
+                    <div class="m-val ok" id="exactValue">—</div>
+                </div>
+                <div class="metric-card">
+                    <div class="m-lbl" data-i18n="numerical_solution">Solution Numérique</div>
+                    <div class="m-val" id="numValue">—</div>
+                </div>
+                <div class="metric-card">
+                    <div class="m-lbl" data-i18n="local_error">Erreur Locale</div>
+                    <div class="m-val err" id="errAbsValue">—</div>
+                </div>
+                <div class="metric-card">
+                    <div class="m-lbl" data-i18n="max_error">ΔMax Global</div>
+                    <div class="m-val err" id="errMaxValue">—</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-section">
+                <div class="chart-card">
+                    <h3><span data-i18n="curves">Courbes</span> <span style="color:var(--text2);font-weight:400;">y<sub style="font-size:0.85em;">exact</sub>(x) vs y<sub style="font-size:0.85em;">num</sub>(x)</span></h3>
+                    <div class="chart-wrap"><canvas id="chartCurves"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3><span data-i18n="convergence_chart">Convergence</span> <span style="color:var(--text2);font-weight:400;">Δ<sub style="font-size:0.85em;">max</sub>(N)</span></h3>
+                    <div class="chart-wrap"><canvas id="chartConvergence"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-section">
+                <div class="table-label">Tableau des résultats — N = <span id="tableNLabel">20</span></div>
+                <div class="table-scroll-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="data_table_x">x</th>
+                                <th data-i18n="data_table_exact">Exact</th>
+                                <th data-i18n="data_table_num">Num (N=20)</th>
+                                <th data-i18n="data_table_error">Erreur</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTable"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+<div class="s-divider"></div>
 
 <!-- CONCLUSION -->
 <section id="conclusion">
     <div class="fade-in">
         <div class="s-label">06</div>
         <h2 class="s-title" data-i18n="conclusion_title">Conclusion</h2>
-        
         <div class="concl-grid">
             <div class="concl-card blue">
                 <h3 data-i18n="convergence_num">Convergence Numérique</h3>
@@ -1233,6 +1255,8 @@
     </div>
 </section>
 
+</div><!-- /page-content -->
+
 <footer>
     <span data-i18n="copyright">© 2026 Samake Ibrahim · КубГУ · Краснодар</span><br>
     <span data-i18n="platform">Scientific Computing Platform</span>
@@ -1242,88 +1266,53 @@
 // ══════════════════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n)
 // ══════════════════════════════════════════════════════════════
-
 const i18n = {
     fr: {
-        nav_home: 'Accueil',
-        nav_objective: 'Objectif',
-        nav_method: 'Méthode',
-        nav_analytical: 'Analytique',
-        nav_program: 'Programme',
-        nav_results: 'Résultats',
-        nav_conclusion: 'Conclusion',
+        nav_home: 'Accueil', nav_objective: 'Objectif', nav_method: 'Méthode',
+        nav_analytical: 'Analytique', nav_program: 'Programme',
+        nav_results: 'Résultats', nav_conclusion: 'Conclusion',
         report_label: 'Rapport de pratique éducative',
-        year: '2026',
-        author: 'Auteur',
-        student: 'Étudiant 1ère année',
+        author: 'Auteur', student: 'Étudiant 1ère année',
         direction: 'Direction & Cours',
-        course: '02.03.03 MOAIS',
         course_sub: '1ère année · Département de modélisation mathématique',
         university: 'Établissement · Année',
-        univ_name: 'KUBSU · 2026',
         univ_sub: 'Krasnodar · Superviseur: S.E. Rubtsov',
         task_statement: 'Énoncé du problème',
-        calc_points: 'Calcul de y(x<sub>i</sub>) pour 21 points x<sub>i</sub> ∈ [1;3], pas = 0,1',
-        rectangles: 'Rectangles droits avec N = 5, 10, 20, 50 subdivisions',
-        exact_sol: 'Solution exacte par substitution u=√((x-t)/(x+t))',
-        errors: 'Erreurs — erreur maximale Δ<sub>max</sub>(N) pour chaque N',
-        visualization: 'Visualisation des courbes et export CSV',
-        convergence: 'Convergence : démontrer Δ<sub>max</sub>→0 quand N→∞',
         method_title: 'Méthode des rectangles droits',
         method_intro: 'Approche numérique classique où la hauteur de chaque rectangle est la valeur de la fonction en l\'extrémité droite du sous-intervalle.',
         analytical_title: 'Solution analytique exacte',
-        analytical_intro: 'Par la substitution u=√((x-t)/(x+t)), on transforme l\'intégrale en arctangente et fonctions algébriques.',
+        analytical_intro: 'Par la substitution u=√((x-t)/(x+t)), on transforme l\'intégrale en arctangente et fonctions algébriques, puis on évalue aux bornes transformées.',
         program_title: 'Description du programme C++',
-        program_intro: 'Le programme utilise des fonctions modulaires : sous-intégrande, méthode numérique, solution exacte.',
+        program_intro: 'Le programme utilise des fonctions modulaires : sous-intégrande, méthode numérique, solution exacte, boucle principale avec export CSV.',
         results_title: 'Résultats et Dashboard Interactif',
-        results_intro: 'Explorez les résultats en temps réel. Ajustez le paramètre x et le nombre de subdivisions N.',
-        param_x: 'Paramètre X',
-        subdivisions_n: 'Nombre de subdivisions N',
-        exact_solution: 'Solution Exacte',
-        numerical_solution: 'Solution Numérique',
-        local_error: 'Erreur Locale',
-        max_error: 'ΔMax Global',
-        curves: 'Courbes',
-        convergence_chart: 'Convergence',
-        data_table_x: 'x',
-        data_table_exact: 'Exact',
-        data_table_num: 'Num (N=20)',
-        data_table_error: 'Erreur',
+        results_intro: 'Explorez les résultats en temps réel. Ajustez le paramètre x et le nombre de subdivisions N pour voir comment l\'erreur converge vers zéro.',
+        param_x: 'Paramètre X', subdivisions_n: 'Nombre de subdivisions N',
+        exact_solution: 'Solution Exacte', numerical_solution: 'Solution Numérique',
+        local_error: 'Erreur Locale', max_error: 'ΔMax Global',
+        curves: 'Courbes', convergence_chart: 'Convergence',
+        data_table_x: 'x', data_table_exact: 'Exact',
+        data_table_num: 'Num (N=20)', data_table_error: 'Erreur',
         conclusion_title: 'Conclusion',
         convergence_num: 'Convergence Numérique',
         convergence_desc: 'La méthode des rectangles droits converge vers la solution exacte.',
         stability: 'Stabilité Computationnelle',
         stability_desc: 'Pour x ∈ [1;3], l\'algorithme reste stable.',
         asymptotic: 'Performance Asymptotique',
-        asymptotic_desc: 'Δ<sub>max</sub> ~ O(1/N) : l\'erreur décroît linéairement.',
+        asymptotic_desc: 'Δmax ~ O(1/N) : l\'erreur décroît linéairement.',
         copyright: '© 2026 Samake Ibrahim · KUBSU · Krasnodar',
         platform: 'Scientific Computing Platform'
     },
     ru: {
-        nav_home: 'Главная',
-        nav_objective: 'Цель',
-        nav_method: 'Метод',
-        nav_analytical: 'Аналитика',
-        nav_program: 'Программа',
-        nav_results: 'Результаты',
-        nav_conclusion: 'Заключение',
+        nav_home: 'Главная', nav_objective: 'Цель', nav_method: 'Метод',
+        nav_analytical: 'Аналитика', nav_program: 'Программа',
+        nav_results: 'Результаты', nav_conclusion: 'Заключение',
         report_label: 'Отчет о практике',
-        year: '2026',
-        author: 'Автор',
-        student: 'Студент 1-го курса',
+        author: 'Автор', student: 'Студент 1-го курса',
         direction: 'Направление и курс',
-        course: '02.03.03 MOAIS',
         course_sub: '1-й курс · Кафедра математического моделирования',
         university: 'Учреждение · Год',
-        univ_name: 'КубГУ · 2026',
         univ_sub: 'Краснодар · Руководитель: С.Е. Рубцов',
         task_statement: 'Постановка задачи',
-        calc_points: 'Расчет y(x<sub>i</sub>) для 21 точки x<sub>i</sub> ∈ [1;3], шаг = 0,1',
-        rectangles: 'Метод прямоугольников с N = 5, 10, 20, 50 подразделениями',
-        exact_sol: 'Точное решение путем подстановки u=√((x-t)/(x+t))',
-        errors: 'Ошибки — максимальная ошибка Δ<sub>max</sub>(N) для каждого N',
-        visualization: 'Визуализация кривых и экспорт CSV',
-        convergence: 'Сходимость : доказать Δ<sub>max</sub>→0 при N→∞',
         method_title: 'Метод прямоугольников',
         method_intro: 'Классический численный подход, где высота каждого прямоугольника равна значению функции в правой конечной точке подинтервала.',
         analytical_title: 'Точное аналитическое решение',
@@ -1332,141 +1321,134 @@ const i18n = {
         program_intro: 'Программа использует модульные функции: подинтегральная функция, численный метод, точное решение.',
         results_title: 'Результаты и интерактивная панель',
         results_intro: 'Изучите результаты в реальном времени. Отрегулируйте параметр x и количество подразделений N.',
-        param_x: 'Параметр X',
-        subdivisions_n: 'Количество подразделений N',
-        exact_solution: 'Точное решение',
-        numerical_solution: 'Численное решение',
-        local_error: 'Локальная ошибка',
-        max_error: 'Максимальная ошибка',
-        curves: 'Кривые',
-        convergence_chart: 'Сходимость',
-        data_table_x: 'x',
-        data_table_exact: 'Точное',
-        data_table_num: 'Числ. (N=20)',
-        data_table_error: 'Ошибка',
+        param_x: 'Параметр X', subdivisions_n: 'Количество подразделений N',
+        exact_solution: 'Точное решение', numerical_solution: 'Численное решение',
+        local_error: 'Локальная ошибка', max_error: 'Максимальная ошибка',
+        curves: 'Кривые', convergence_chart: 'Сходимость',
+        data_table_x: 'x', data_table_exact: 'Точное',
+        data_table_num: 'Числ. (N=20)', data_table_error: 'Ошибка',
         conclusion_title: 'Заключение',
         convergence_num: 'Численная сходимость',
         convergence_desc: 'Метод прямоугольников сходится к точному решению.',
         stability: 'Вычислительная стабильность',
         stability_desc: 'Для x ∈ [1;3] алгоритм остается стабильным.',
         asymptotic: 'Асимптотическая производительность',
-        asymptotic_desc: 'Δ<sub>max</sub> ~ O(1/N) : ошибка уменьшается линейно.',
+        asymptotic_desc: 'Δmax ~ O(1/N) : ошибка уменьшается линейно.',
         copyright: '© 2026 Самаке Ибрахим · КубГУ · Краснодар',
         platform: 'Платформа научных вычислений'
     },
     en: {
-        nav_home: 'Home',
-        nav_objective: 'Objective',
-        nav_method: 'Method',
-        nav_analytical: 'Analytics',
-        nav_program: 'Program',
-        nav_results: 'Results',
-        nav_conclusion: 'Conclusion',
+        nav_home: 'Home', nav_objective: 'Objective', nav_method: 'Method',
+        nav_analytical: 'Analytics', nav_program: 'Program',
+        nav_results: 'Results', nav_conclusion: 'Conclusion',
         report_label: 'Educational Practice Report',
-        year: '2026',
-        author: 'Author',
-        student: '1st year Student',
+        author: 'Author', student: '1st year Student',
         direction: 'Direction & Course',
-        course: '02.03.03 MOAIS',
         course_sub: '1st year · Department of Mathematical Modeling',
         university: 'Institution · Year',
-        univ_name: 'KUBSU · 2026',
         univ_sub: 'Krasnodar · Supervisor: S.E. Rubtsov',
         task_statement: 'Problem Statement',
-        calc_points: 'Calculate y(x<sub>i</sub>) for 21 points x<sub>i</sub> ∈ [1;3], step = 0.1',
-        rectangles: 'Rectangle method with N = 5, 10, 20, 50 subdivisions',
-        exact_sol: 'Exact solution by substitution u=√((x-t)/(x+t))',
-        errors: 'Errors — maximum error Δ<sub>max</sub>(N) for each N',
-        visualization: 'Curve visualization and CSV export',
-        convergence: 'Convergence : show Δ<sub>max</sub>→0 as N→∞',
         method_title: 'Rectangle Method',
-        method_intro: 'Classical numerical approach where the height of each rectangle equals the function value at the right endpoint.',
+        method_intro: 'Classical numerical approach where the height of each rectangle equals the function value at the right endpoint of each sub-interval.',
         analytical_title: 'Exact Analytical Solution',
-        analytical_intro: 'By substitution u=√((x-t)/(x+t)), the integral is transformed into arctangent and algebraic functions.',
-        program_title: 'C++ Program Description',
-        program_intro: 'The program uses modula`r functions: integrand, numerical method, exact solution.',
-        results_title: 'Results and Interactive Dashboard',
-        results_intro: 'Explore results in real time. Adjust parameter x and number of subdivisions N.',
-        param_x: 'Parameter X',
-        subdivisions_n: 'Number of Subdivisions N',
-        exact_solution: 'Exact Solution',
-        numerical_solution: 'Numerical Solution',
-        local_error: 'Local Error',
-        max_error: 'Max Error',
-        curves: 'Curves',
-        convergence_chart: 'Convergence',
-        data_table_x: 'x',
-        data_table_exact: 'Exact',
-        data_table_num: 'Num (N=20)',
-        data_table_error: 'Error',
+        analytical_intro: 'By substitution u=√((x-t)/(x+t)), the integral transforms to arctangent functions.',
+        program_title: 'C++ Program',
+        program_intro: 'Modular functions: integrand, numerical method, exact solution.',
+        results_title: 'Results & Dashboard',
+        results_intro: 'Explore results in real time. Adjust parameter x and N.',
+        param_x: 'Parameter X', subdivisions_n: 'Subdivisions N',
+        exact_solution: 'Exact', numerical_solution: 'Numerical',
+        local_error: 'Local Error', max_error: 'Max Error',
+        curves: 'Curves', convergence_chart: 'Convergence',
+        data_table_x: 'x', data_table_exact: 'Exact',
+        data_table_num: 'Num (N=20)', data_table_error: 'Error',
         conclusion_title: 'Conclusion',
         convergence_num: 'Numerical Convergence',
         convergence_desc: 'The rectangle method converges to the exact solution.',
         stability: 'Computational Stability',
         stability_desc: 'For x ∈ [1;3], the algorithm remains stable.',
         asymptotic: 'Asymptotic Performance',
-        asymptotic_desc: 'Δ<sub>max</sub> ~ O(1/N) : error decreases linearly.',
+        asymptotic_desc: 'Δmax ~ O(1/N) : error decreases linearly.',
         copyright: '© 2026 Samake Ibrahim · КубГУ · Krasnodar',
         platform: 'Scientific Computing Platform'
     }
 };
 
-let currentLanguage = localStorage.getItem('selectedLanguage') || 
-                     (navigator.language.startsWith('ru') ? 'ru' : 
-                      navigator.language.startsWith('en') ? 'en' : 'fr');
+let lang = localStorage.getItem('lang') ||
+           (navigator.language.startsWith('ru') ? 'ru' :
+            navigator.language.startsWith('en') ? 'en' : 'fr');
 
-// ══════════════════════════════════════════════════════════════
-// TRANSLATION FUNCTIONS
-// ══════════════════════════════════════════════════════════════
+function t(k) { return i18n[lang][k] || i18n.fr[k] || k; }
 
-function t(key) {
-    return i18n[currentLanguage][key] || i18n['fr'][key];
+function applyLang() {
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
 }
 
-function switchLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('selectedLanguage', lang);
-    updateAllTranslations();
-    updateLanguageButtons();
+document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => {
+    lang = b.dataset.lang;
+    localStorage.setItem('lang', lang);
+    applyLang();
+}));
+
+// ══════════════════════════════════════════════════════════════
+// HAMBURGER MENU
+// ══════════════════════════════════════════════════════════════
+const hamBtn = document.getElementById('hamBtn');
+const mobileMenu = document.getElementById('mobile-menu');
+let menuOpen = false;
+
+function toggleMenu(force) {
+    menuOpen = force !== undefined ? force : !menuOpen;
+    hamBtn.classList.toggle('open', menuOpen);
+    hamBtn.setAttribute('aria-expanded', menuOpen);
+    mobileMenu.classList.toggle('open', menuOpen);
+    document.body.classList.toggle('menu-open', menuOpen);
 }
 
-function updateLanguageButtons() {
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.lang === currentLanguage) {
-            btn.classList.add('active');
-        }
+hamBtn.addEventListener('click', () => toggleMenu());
+document.querySelectorAll('[data-mob-link]').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) toggleMenu(false); });
+
+// ══════════════════════════════════════════════════════════════
+// SCROLL PROGRESS + NAV SCROLL SPY
+// ══════════════════════════════════════════════════════════════
+const prog = document.getElementById('progress');
+const navbar = document.getElementById('navbar');
+
+function onScroll() {
+    const s = window.scrollY;
+    const totalH = document.body.scrollHeight - window.innerHeight;
+    prog.style.width = (s / totalH * 100) + '%';
+    navbar.classList.toggle('scrolled', s > 20);
+
+    let cur = '';
+    document.querySelectorAll('section[id]').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 80) cur = sec.id;
+    });
+    document.querySelectorAll('.nav-links-desktop a, [data-mob-link]').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
     });
 }
-
-function updateAllTranslations() {
-    // Update elements with data-i18n attribute
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        el.textContent = t(key);
-    });
-    
-    // Update specific IDs
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const key = el.dataset.i18nHtml;
-        el.innerHTML = t(key);
-    });
-}
+window.addEventListener('scroll', onScroll, { passive: true });
 
 // ══════════════════════════════════════════════════════════════
-// NUMERICAL FUNCTIONS
+// FADE IN OBSERVER
 // ══════════════════════════════════════════════════════════════
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 
-function f(t, x) {
-    return Math.sqrt((x - t) / (x + t));
-}
+// ══════════════════════════════════════════════════════════════
+// MATH — NUMERICAL CORE
+// ══════════════════════════════════════════════════════════════
+function f(t, x) { return Math.sqrt((x - t) / (x + t)); }
 
 function numIntegration(N, x) {
     const h = 1.0 / N;
     let sum = 0.0;
-    for (let k = 1; k <= N; k++) {
-        sum += f(k * h, x);
-    }
+    for (let k = 1; k <= N; k++) sum += f(k * h, x);
     return h * sum;
 }
 
@@ -1475,59 +1457,26 @@ function exactSolution(x) {
     return -2.0 * x * Math.atan(u) + Math.sqrt(x * x - 1.0) + x * (Math.PI / 2.0 - 1.0);
 }
 
-// ══════════════════════════════════════════════════════════════
-// DASHBOARD STATE & INTERACTION
-// ══════════════════════════════════════════════════════════════
+function genX() { return Array.from({ length: 21 }, (_, i) => 1 + i * 0.1); }
 
-let state = {
-    x: 2.0,
-    N: 20,
-    chartCurves: null,
-    chartConvergence: null
-};
-
-const xSlider = document.getElementById('xSlider');
-const xValue = document.getElementById('xValue');
-const nButtons = document.querySelectorAll('.n-btn');
-
-// N Button Handlers
-nButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        nButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.N = parseInt(btn.dataset.n);
-        updateDashboard();
-    });
-});
-
-// X Slider Handler
-xSlider.addEventListener('input', (e) => {
-    state.x = parseFloat(e.target.value);
-    xValue.textContent = state.x.toFixed(1);
-    updateDashboard();
-});
+let state = { x: 2.0, N: 20, chartCurves: null, chartConvergence: null };
 
 // ══════════════════════════════════════════════════════════════
 // DASHBOARD UPDATE
 // ══════════════════════════════════════════════════════════════
-
 function updateDashboard() {
-    const exact = exactSolution(state.x);
-    const numerical = numIntegration(state.N, state.x);
-    const errAbs = Math.abs(numerical - exact);
+    const ex = exactSolution(state.x);
+    const num = numIntegration(state.N, state.x);
+    const err = Math.abs(num - ex);
+    const xv = genX();
+    let mx = 0;
+    xv.forEach(x => { mx = Math.max(mx, Math.abs(numIntegration(state.N, x) - exactSolution(x))); });
 
-    document.getElementById('numValue').textContent = numerical.toFixed(6);
-    document.getElementById('exactValue').textContent = exact.toFixed(6);
-    document.getElementById('errAbsValue').textContent = errAbs.toFixed(6);
-    
-    // Calculate global max error for current N
-    const xVals = generateXValues();
-    let maxErr = 0;
-    xVals.forEach(x => {
-        const err = Math.abs(numIntegration(state.N, x) - exactSolution(x));
-        maxErr = Math.max(maxErr, err);
-    });
-    document.getElementById('errMaxValue').textContent = maxErr.toFixed(6);
+    document.getElementById('exactValue').textContent = ex.toFixed(6);
+    document.getElementById('numValue').textContent = num.toFixed(6);
+    document.getElementById('errAbsValue').textContent = err.toFixed(6);
+    document.getElementById('errMaxValue').textContent = mx.toFixed(6);
+    document.getElementById('tableNLabel').textContent = state.N;
 
     updateCharts();
     updateTable();
@@ -1536,163 +1485,74 @@ function updateDashboard() {
 // ══════════════════════════════════════════════════════════════
 // CHARTS
 // ══════════════════════════════════════════════════════════════
-
-function generateXValues() {
-    const xVals = [];
-    for (let i = 0; i <= 20; i++) {
-        xVals.push(1.0 + i * 0.1);
+const chartOpts = {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: {
+        legend: { display: true, position: 'top', labels: { color: '#e8edf5', font: { size: 10 }, usePointStyle: true, padding: 12 } },
+        tooltip: {
+            backgroundColor: 'rgba(8,12,22,0.9)', borderColor: '#7eb8f7', borderWidth: 1,
+            titleColor: '#e8edf5', bodyColor: '#8fa3bf', padding: 9, cornerRadius: 6
+        }
+    },
+    scales: {
+        x: { ticks: { color: '#8fa3bf', font: { size: 9 }, maxTicksLimit: 6 }, grid: { color: 'rgba(126,184,247,0.07)' }, border: { color: 'rgba(126,184,247,0.1)' } },
+        y: { ticks: { color: '#8fa3bf', font: { size: 9 } }, grid: { color: 'rgba(126,184,247,0.07)' }, border: { color: 'rgba(126,184,247,0.1)' } }
     }
-    return xVals;
-}
+};
 
 function updateCharts() {
-    const xVals = generateXValues();
-    
-    // Chart 1: Exact vs Numerical for current N
-    const numDataCurrent = xVals.map(x => numIntegration(state.N, x));
-    const exactData = xVals.map(x => exactSolution(x));
+    const xv = genX();
+    const ex = xv.map(x => exactSolution(x));
+    const num = xv.map(x => numIntegration(state.N, x));
 
     const ctx1 = document.getElementById('chartCurves').getContext('2d');
-    
     if (state.chartCurves) {
-        state.chartCurves.data.datasets[0].data = exactData;
-        state.chartCurves.data.datasets[1].data = numDataCurrent;
-        state.chartCurves.update();
+        state.chartCurves.data.datasets[0].data = ex;
+        state.chartCurves.data.datasets[1].data = num;
+        state.chartCurves.update('none');
     } else {
         state.chartCurves = new Chart(ctx1, {
             type: 'line',
             data: {
-                labels: xVals.map(x => x.toFixed(1)),
+                labels: xv.map(x => x.toFixed(1)),
                 datasets: [
-                    { 
-                        label: 'Exact', 
-                        data: exactData, 
-                        borderColor: '#7eb8f7', 
-                        borderWidth: 2.5, 
-                        tension: 0.4, 
-                        fill: false,
-                        pointRadius: 0,
-                        pointHoverRadius: 4
-                    },
-                    { 
-                        label: 'Numérique', 
-                        data: numDataCurrent, 
-                        borderColor: '#f0c070', 
-                        borderWidth: 2, 
-                        borderDash: [5, 5],
-                        tension: 0.4, 
-                        fill: false,
-                        pointRadius: 0,
-                        pointHoverRadius: 4
-                    }
+                    { label: 'Exact', data: ex, borderColor: '#7eb8f7', borderWidth: 2.5, tension: 0.4, fill: false, pointRadius: 0, pointHoverRadius: 4 },
+                    { label: 'Numérique', data: num, borderColor: '#f0c070', borderWidth: 2, borderDash: [5, 4], tension: 0.4, fill: false, pointRadius: 0, pointHoverRadius: 4 }
                 ]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { intersect: false, mode: 'index' },
-                plugins: { 
-                    legend: { 
-                        display: true, 
-                        position: 'top', 
-                        labels: { 
-                            color: '#e8edf5', 
-                            font: { size: 11 },
-                            usePointStyle: true,
-                            padding: 15
-                        } 
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(8,12,22,0.8)',
-                        borderColor: '#7eb8f7',
-                        borderWidth: 1,
-                        titleColor: '#e8edf5',
-                        bodyColor: '#8fa3bf',
-                        padding: 10,
-                        cornerRadius: 6
-                    }
-                },
-                scales: {
-                    x: { 
-                        ticks: { color: '#8fa3bf', font: { size: 10 } }, 
-                        grid: { color: 'rgba(126,184,247,0.08)' },
-                        border: { color: 'rgba(126,184,247,0.1)' }
-                    },
-                    y: { 
-                        ticks: { color: '#8fa3bf', font: { size: 10 } }, 
-                        grid: { color: 'rgba(126,184,247,0.08)' },
-                        border: { color: 'rgba(126,184,247,0.1)' }
-                    }
-                }
-            }
+            options: { ...chartOpts }
         });
     }
 
-    // Chart 2: Convergence - Bar chart showing max error for each N
-    const Nvals = [5, 10, 20, 50];
-    const maxErrors = Nvals.map(N => {
-        let maxErr = 0;
-        xVals.forEach(x => {
-            const err = Math.abs(numIntegration(N, x) - exactSolution(x));
-            maxErr = Math.max(maxErr, err);
-        });
-        return maxErr;
+    const Ns = [5, 10, 20, 50];
+    const errs = Ns.map(N => {
+        let m = 0;
+        xv.forEach(x => { m = Math.max(m, Math.abs(numIntegration(N, x) - exactSolution(x))); });
+        return m;
     });
-
+    const cols = ['rgba(240,192,112,0.85)', 'rgba(110,231,183,0.85)', 'rgba(126,184,247,0.85)', 'rgba(180,167,214,0.85)'];
     const ctx2 = document.getElementById('chartConvergence').getContext('2d');
-    const colors = ['#f0c070', '#6ee7b7', '#7eb8f7', '#b4a7d6'];
-    
     if (state.chartConvergence) {
-        state.chartConvergence.data.datasets[0].data = maxErrors;
-        state.chartConvergence.data.datasets[0].backgroundColor = colors;
-        state.chartConvergence.update();
+        state.chartConvergence.data.datasets[0].data = errs;
+        state.chartConvergence.update('none');
     } else {
         state.chartConvergence = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: Nvals.map(N => 'N=' + N),
-                datasets: [{
-                    label: 'Δmax',
-                    data: maxErrors,
-                    backgroundColor: colors,
-                    borderRadius: 6,
-                    borderSkipped: false,
-                    borderWidth: 0
-                }]
+                labels: Ns.map(n => 'N=' + n),
+                datasets: [{ label: 'Δmax', data: errs, backgroundColor: cols, borderRadius: 5, borderSkipped: false, borderWidth: 0 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'x',
-                plugins: { 
+                ...chartOpts,
+                plugins: {
+                    ...chartOpts.plugins,
                     legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(8,12,22,0.8)',
-                        borderColor: '#7eb8f7',
-                        borderWidth: 1,
-                        titleColor: '#e8edf5',
-                        bodyColor: '#8fa3bf',
-                        padding: 10,
-                        cornerRadius: 6,
-                        callbacks: {
-                            label: function(context) {
-                                return 'Δmax = ' + context.parsed.y.toFixed(6);
-                            }
-                        }
-                    }
+                    tooltip: { ...chartOpts.plugins.tooltip, callbacks: { label: c => 'Δmax = ' + c.parsed.y.toFixed(6) } }
                 },
                 scales: {
-                    x: { 
-                        ticks: { color: '#8fa3bf', font: { size: 10 } }, 
-                        grid: { display: false },
-                        border: { color: 'rgba(126,184,247,0.1)' }
-                    },
-                    y: { 
-                        ticks: { color: '#8fa3bf', font: { size: 10 } }, 
-                        grid: { color: 'rgba(126,184,247,0.08)' },
-                        border: { color: 'rgba(126,184,247,0.1)' },
-                        beginAtZero: true
-                    }
+                    x: { ticks: { color: '#8fa3bf', font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: '#8fa3bf', font: { size: 9 } }, grid: { color: 'rgba(126,184,247,0.07)' }, beginAtZero: true }
                 }
             }
         });
@@ -1700,69 +1560,42 @@ function updateCharts() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// DATA TABLE
+// TABLE
 // ══════════════════════════════════════════════════════════════
-
 function updateTable() {
     const tbody = document.getElementById('dataTable');
     tbody.innerHTML = '';
-    
-    for (let i = 0; i <= 20; i++) {
-        const x = 1.0 + i * 0.1;
+    genX().forEach((x, i) => {
         const num = numIntegration(state.N, x);
-        const exact = exactSolution(x);
-        const err = Math.abs(num - exact);
-        
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${x.toFixed(1)}</td>
-            <td>${exact.toFixed(6)}</td>
-            <td>${num.toFixed(6)}</td>
-            <td class="err-val">${err.toFixed(6)}</td>
-        `;
-        
-        if (i % 5 === 0) row.classList.add('highlight');
-    }
-}
-
-// ══════════════════════════════════════════════════════════════
-// INITIALIZATION & ANIMATIONS
-// ══════════════════════════════════════════════════════════════
-
-function initIntersectionObserver() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-}
-
-function initNavScrollSpy() {
-    const links = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', () => {
-        let current = '';
-        document.querySelectorAll('section').forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (pageYOffset >= sectionTop - 200) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        links.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href').slice(1) === current) {
-                link.classList.add('active');
-            }
-        });
+        const ex = exactSolution(x);
+        const err = Math.abs(num - ex);
+        const tr = tbody.insertRow();
+        if (i % 5 === 0) tr.classList.add('highlight');
+        tr.innerHTML = `<td>${x.toFixed(1)}</td><td>${ex.toFixed(6)}</td><td>${num.toFixed(6)}</td><td class="err-val">${err.toFixed(6)}</td>`;
     });
 }
 
-function initKaTeX() {
+// ══════════════════════════════════════════════════════════════
+// EVENTS
+// ══════════════════════════════════════════════════════════════
+document.getElementById('xSlider').addEventListener('input', e => {
+    state.x = parseFloat(e.target.value);
+    document.getElementById('xValue').textContent = state.x.toFixed(1);
+    updateDashboard();
+});
+
+document.querySelectorAll('.n-btn').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.N = parseInt(btn.dataset.n);
+    updateDashboard();
+}));
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+    applyLang();
     renderMathInElement(document.body, {
         delimiters: [
             { left: '$$', right: '$$', display: true },
@@ -1771,24 +1604,8 @@ function initKaTeX() {
             { left: '\\(', right: '\\)', display: false }
         ]
     });
-}
-
-// Init on load
-window.addEventListener('DOMContentLoaded', () => {
-    // Language selector
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            switchLanguage(btn.dataset.lang);
-        });
-    });
-    
-    updateLanguageButtons();
-    updateAllTranslations();
-    
-    initKaTeX();
-    initIntersectionObserver();
-    initNavScrollSpy();
     updateDashboard();
+    onScroll();
 });
 </script>
 
