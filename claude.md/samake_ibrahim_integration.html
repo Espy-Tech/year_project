@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intégrale avec Paramètre — Samake Ibrahim</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #0b0f1a;
+  --bg2: #111827;
+  --bg3: #1a2236;
+  --card: #141c2e;
+  --border: rgba(99,179,237,0.15);
+  --border2: rgba(99,179,237,0.3);
+  --accent: #63b3ed;
+  --accent2: #f6ad55;
+  --accent3: #68d391;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --red: #fc8181;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'Outfit', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99,179,237,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,179,237,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(11,15,26,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+}
+
+.nav-brand {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+}
+
+.nav-links a {
+  display: block;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text);
+  background: rgba(99,179,237,0.1);
+}
+
+/* ── SECTIONS ── */
+section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 100px 2rem 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── HERO ── */
+#hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.hero-tag {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-tag::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 1rem;
+  max-width: 780px;
+}
+
+.hero-title em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.hero-formula {
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--accent2);
+  margin: 1.5rem 0 2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(246,173,85,0.06);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 8px 8px 0;
+  display: inline-block;
+}
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 700px;
+  margin-top: 3rem;
+}
+
+.hero-meta-item {
+  background: var(--card);
+  padding: 1.2rem 1.5rem;
+}
+
+.hero-meta-item .lbl { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+.hero-meta-item .val { font-size: 15px; font-weight: 500; color: var(--text); }
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 3rem;
+}
+
+.nav-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  text-decoration: none;
+  color: var(--text2);
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.nav-dot:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── SECTION HEADINGS ── */
+.s-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.s-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+
+.s-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  color: var(--text);
+  margin-bottom: 1.2rem;
+  line-height: 1.2;
+}
+
+.s-intro {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text2);
+  max-width: 680px;
+  margin-bottom: 3rem;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+/* ── OBJECTIF ── */
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 2rem 0;
+}
+
+.task-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+
+.task-item:hover { border-color: var(--border2); }
+
+.task-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(99,179,237,0.1);
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 32px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.task-text { font-size: 14px; line-height: 1.6; color: var(--text2); }
+.task-text strong { color: var(--text); font-weight: 500; }
+
+/* ── MÉTHODE ── */
+.formula-block {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 1.5rem 0;
+}
+
+.formula-block .f-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  margin-bottom: 0.75rem;
+}
+
+.formula-block .f-eq {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--accent2);
+  line-height: 1.8;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  transition: background 0.2s;
+}
+
+.step:hover { background: var(--bg3); }
+
+.step-n {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  min-width: 28px;
+  margin-top: 2px;
+}
+
+.step-body { flex: 1; }
+.step-body h4 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.step-body p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.step-body code { font-family: var(--mono); font-size: 12px; color: var(--accent2); background: rgba(246,173,85,0.1); padding: 2px 6px; border-radius: 4px; }
+
+/* ── ANALYTIQUE ── */
+.derivation {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 2rem 0;
+}
+
+.deriv-step {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.deriv-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(99,179,237,0.12);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.deriv-content h4 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.deriv-content p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.deriv-content .math { font-family: var(--mono); font-size: 13px; color: var(--accent2); background: rgba(246,173,85,0.07); border-radius: 6px; padding: 8px 12px; margin-top: 6px; display: block; }
+
+.final-result {
+  background: linear-gradient(135deg, rgba(99,179,237,0.08), rgba(104,211,145,0.06));
+  border: 1px solid rgba(99,179,237,0.3);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.final-result .f-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent3); margin-bottom: 1rem; }
+.final-result .f-math { font-family: var(--mono); font-size: 15px; color: var(--text); line-height: 2; }
+.final-result .f-math span { color: var(--accent2); }
+
+/* ── PROGRAMME ── */
+.libs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 2rem 0;
+}
+
+.lib-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.lib-icon {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent3);
+  background: rgba(104,211,145,0.1);
+  border-radius: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.lib-info h4 { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.lib-info p { font-size: 12px; color: var(--text2); }
+
+pre.code-block {
+  background: #080d18;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: #cdd6f4;
+  margin: 1.5rem 0;
+}
+
+.kw { color: #89b4fa; }
+.type { color: #cba6f7; }
+.fn { color: #a6e3a1; }
+.str { color: #a6e3a1; }
+.cmt { color: #585b70; font-style: italic; }
+.num { color: #fab387; }
+.var { color: #cdd6f4; }
+
+/* ── RÉSULTATS INTERACTIFS ── */
+.controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.ctrl-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+.ctrl-group label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
+
+.ctrl-group input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  outline: none;
+}
+
+.ctrl-group input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 2px rgba(99,179,237,0.3);
+}
+
+.n-btns { display: flex; gap: 6px; }
+.n-btn {
+  padding: 5px 14px;
+  font-size: 13px;
+  font-family: var(--mono);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.n-btn:hover { border-color: var(--border2); color: var(--text); }
+.n-btn.active { background: var(--accent); border-color: var(--accent); color: #0b0f1a; font-weight: 600; }
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.metric-card .m-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px; }
+.metric-card .m-val { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--text); }
+.metric-card .m-val.err { color: var(--red); }
+.metric-card .m-val.ok { color: var(--accent3); }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 700px) { .charts-grid { grid-template-columns: 1fr; } }
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.chart-card h3 { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 1rem; }
+
+.chart-wrap { position: relative; width: 100%; height: 240px; }
+
+.table-scroll { overflow-x: auto; margin-top: 2rem; }
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+table.data-table th {
+  text-align: right;
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--sans);
+  font-weight: 500;
+}
+
+table.data-table th:first-child { text-align: left; }
+
+table.data-table td {
+  text-align: right;
+  padding: 7px 12px;
+  border-bottom: 1px solid rgba(99,179,237,0.06);
+  color: var(--text2);
+  transition: background 0.15s;
+}
+
+table.data-table td:first-child { text-align: left; color: var(--text); font-family: var(--sans); }
+table.data-table tr:hover td { background: rgba(99,179,237,0.04); }
+table.data-table tr.highlight td { background: rgba(99,179,237,0.1); color: var(--text); }
+table.data-table .err-val { color: var(--red); }
+
+/* ── CONCLUSION ── */
+.concl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 2rem 0;
+}
+
+.concl-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.concl-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+}
+
+.concl-card.blue::before { background: var(--accent); }
+.concl-card.orange::before { background: var(--accent2); }
+.concl-card.green::before { background: var(--accent3); }
+
+.concl-card h3 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+.concl-card p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+.err-table {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+
+.err-row {
+  display: contents;
+}
+
+.err-row > div {
+  background: var(--card);
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.err-row > div:nth-child(1) { font-family: var(--mono); color: var(--accent); font-weight: 500; }
+.err-row > div:nth-child(2) { color: var(--text2); }
+.err-row > div:nth-child(3) { font-family: var(--mono); color: var(--red); text-align: right; }
+.err-row.header > div { background: var(--bg3); color: var(--text3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.bar-wrap { display: flex; align-items: center; gap: 10px; }
+.bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--red), var(--accent2)); border-radius: 3px; transition: width 0.5s ease; }
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text3);
+}
+
+footer span { color: var(--accent); }
+
+/* ── SCROLL FADE ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: none; }
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* ── responsive nav ── */
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">∫ Intégrale avec paramètre</div>
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Accueil</a></li>
+    <li><a href="#objectif">Objectif</a></li>
+    <li><a href="#methode">Méthode</a></li>
+    <li><a href="#analytique">Analytique</a></li>
+    <li><a href="#programme">Programme</a></li>
+    <li><a href="#resultats">Résultats</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-tag">Rapport de pratique éducative · 2026</div>
+  <h1 class="hero-title">
+    Intégrale avec<br><em>paramètre</em> — calcul<br>numérique & analytique
+  </h1>
+  <div class="hero-formula">y(x) = ∫₀¹ √( (x−t) / (x+t) ) dt,  x ∈ [1 ; 3]</div>
+  <p style="font-size:15px;color:var(--text2);max-width:560px;line-height:1.75;">
+    Comparaison de la méthode des rectangles droits (N = 5, 10, 20, 50)
+    avec la solution exacte obtenue par substitution trigonométrique.
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="lbl">Auteur</div><div class="val">Samake Ibrahim</div></div>
+    <div class="hero-meta-item"><div class="lbl">Direction</div><div class="val">02.03.03 MOAIS</div></div>
+    <div class="hero-meta-item"><div class="lbl">Cours</div><div class="val">1ère année</div></div>
+    <div class="hero-meta-item"><div class="lbl">Établissement</div><div class="val">KubGU · 2026</div></div>
+  </div>
+  <div class="nav-dots" style="flex-wrap:wrap;">
+    <a href="#objectif" class="nav-dot">01 Objectif →</a>
+    <a href="#methode" class="nav-dot">02 Méthode →</a>
+    <a href="#analytique" class="nav-dot">03 Analytique →</a>
+    <a href="#resultats" class="nav-dot">04 Résultats →</a>
+  </div>
+</section>
+
+<!-- ══════ OBJECTIF ══════ -->
+<section id="objectif">
+  <div class="fade-in">
+    <div class="s-label">01</div>
+    <h2 class="s-title">Postanovka zadachi</h2>
+    <p class="s-intro">
+      L'objectif est de calculer numériquement la fonction définie par l'intégrale avec paramètre,
+      puis de comparer ces résultats avec l'expression analytique exacte.
+    </p>
+
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-num">01</div>
+        <div class="task-text"><strong>Calcul des valeurs</strong> de y(xᵢ) pour 21 points xᵢ ∈ [1 ; 3] avec pas = 0,1</div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">02</div>
+        <div class="task-text"><strong>Méthode des rectangles droits</strong> avec N = 5, 10, 20, 50 subdivisions</div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">03</div>
+        <div class="task-text"><strong>Calcul analytique exact</strong> par substitution trigonométrique</div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">04</div>
+        <div class="task-text"><strong>Comparaison & nevyazki</strong> — erreur maximale Δmax pour chaque N</div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">05</div>
+        <div class="task-text"><strong>Visualisation</strong> des courbes et exportation CSV pour Excel</div>
+      </div>
+      <div class="task-item">
+        <div class="task-num">06</div>
+        <div class="task-text"><strong>Analyse de convergence</strong> : démontrer que Δmax → 0 quand N → ∞</div>
+      </div>
+    </div>
+
+    <div class="formula-block">
+      <div class="f-label">Points de calcul</div>
+      <div class="f-eq">xᵢ = 1 + i · (3−1)/20,   i = 0, 1, 2, …, 20</div>
+    </div>
+
+    <div class="formula-block">
+      <div class="f-label">Erreur maximale (nevyazka)</div>
+      <div class="f-eq">Δmax(N) = max₀≤ᵢ≤₂₀ | y_num(xᵢ) − y_exact(xᵢ) |</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ MÉTHODE ══════ -->
+<section id="methode">
+  <div class="fade-in">
+    <div class="s-label">02</div>
+    <h2 class="s-title">Méthode des rectangles droits</h2>
+    <p class="s-intro">
+      La fonction sous l'intégrale ne s'intègre pas en fonctions élémentaires sur tout le domaine.
+      On applique donc la méthode des rectangles droits, remplaçant chaque sous-intervalle
+      par la valeur de la fonction en son extrémité droite.
+    </p>
+
+    <div class="formula-block">
+      <div class="f-label">Formule de quadrature — Presmoy Method</div>
+      <div class="f-eq">
+        y_num(x) ≈ h · Σ f(tₖ, x)  [k = 1 … N]<br><br>
+        où  tₖ = k·h,   h = (b−a)/N = 1/N<br><br>
+        f(t, x) = √( (x−t) / (x+t) )
+      </div>
+    </div>
+
+    <div class="formula-block" style="border-left:3px solid var(--accent); border-radius:0 8px 8px 0; background:rgba(99,179,237,0.05);">
+      <div class="f-label">Forme compacte pour l'implémentation</div>
+      <div class="f-eq" style="color:var(--accent);">
+        ∫₀¹ f(t,x) dt  ≈  (1/N) · Σ f(k/N, x)    [k = 1 … N]
+      </div>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:500;color:var(--text);margin:2rem 0 1rem;">Déroulement de l'algorithme</h3>
+
+    <div class="steps-list">
+      <div class="step">
+        <div class="step-n">①</div>
+        <div class="step-body">
+          <h4>Génération des points xᵢ</h4>
+          <p>21 valeurs uniformément réparties sur [1 ; 3] avec pas <code>step = (d−c)/20 = 0.1</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">②</div>
+        <div class="step-body">
+          <h4>Calcul du pas h</h4>
+          <p>Pour chaque N, on calcule <code>h = 1/N</code> — le pas d'intégration sur [0 ; 1]</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">③</div>
+        <div class="step-body">
+          <h4>Évaluation de la somme</h4>
+          <p>Pour k = 1..N, on évalue <code>f(k·h, x)</code> et on accumule la somme</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">④</div>
+        <div class="step-body">
+          <h4>Multiplication par h</h4>
+          <p>Le résultat final est <code>y_num = h × somme</code>, approximant l'aire sous la courbe</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">⑤</div>
+        <div class="step-body">
+          <h4>Calcul de l'erreur</h4>
+          <p>On compare avec la solution exacte : <code>|y_num − y_exact|</code>, et on retient le max sur tous les xᵢ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ANALYTIQUE ══════ -->
+<section id="analytique">
+  <div class="fade-in">
+    <div class="s-label">03</div>
+    <h2 class="s-title">Solution analytique</h2>
+    <p class="s-intro">
+      Par substitution u = √((x−t)/(x+t)), on transforme l'intégrale en une combinaison
+      d'arctangente et de fonctions algébriques, puis on évalue aux bornes.
+    </p>
+
+    <div class="derivation">
+      <div class="deriv-step">
+        <div class="deriv-bullet">1</div>
+        <div class="deriv-content">
+          <h4>Substitution</h4>
+          <p>On pose u = √((x−t)/(x+t)), donc u² = (x−t)/(x+t), d'où :</p>
+          <code class="math">t = x · (1 − u²) / (1 + u²)</code>
+        </div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-bullet">2</div>
+        <div class="deriv-content">
+          <h4>Différentielle</h4>
+          <p>En dérivant t par rapport à u par la règle du quotient :</p>
+          <code class="math">dt = x · (−4u) / (1 + u²)²  du</code>
+        </div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-bullet">3</div>
+        <div class="deriv-content">
+          <h4>Changement de bornes</h4>
+          <p>t = 0 → u = 1 &nbsp;|&nbsp; t = 1 → u = √((x−1)/(x+1))</p>
+          <code class="math">y(x) = −4x · ∫₁^√((x−1)/(x+1))  u² / (1+u²)²  du</code>
+        </div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-bullet">4</div>
+        <div class="deriv-content">
+          <h4>Intégration par décomposition</h4>
+          <p>On utilise u²/(1+u²)² = 1/(1+u²) − 1/(1+u²)² et les intégrales tabulaires :</p>
+          <code class="math">I = ½ ( arctan(u) − u/(1+u²) ) + C</code>
+        </div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-bullet">5</div>
+        <div class="deriv-content">
+          <h4>Évaluation aux bornes</h4>
+          <p>En posant U = √((x−1)/(x+1)) et en notant que 1+U² = 2x/(x+1) :</p>
+          <code class="math">U / (1+U²) = √(x²−1) / (2x)</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="final-result">
+      <div class="f-title">Résultat analytique final</div>
+      <div class="f-math">
+        y(x) = <span>−2x</span> · arctan( √((x−1)/(x+1)) ) + <span>√(x²−1)</span> + x · <span>(π/2 − 1)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ PROGRAMME ══════ -->
+<section id="programme">
+  <div class="fade-in">
+    <div class="s-label">04</div>
+    <h2 class="s-title">Description du programme C++</h2>
+    <p class="s-intro">
+      Le programme est structuré en fonctions indépendantes : sous-intégrande, méthode numérique,
+      solution exacte, et boucle principale avec export CSV.
+    </p>
+
+    <div class="libs-grid">
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>iostream</h4><p>Entrée/sortie console</p></div></div>
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>cmath</h4><p>sqrt, acos, fabs, atan</p></div></div>
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>vector</h4><p>Tableaux dynamiques</p></div></div>
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>iomanip</h4><p>Formatage setw/setprecision</p></div></div>
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>fstream</h4><p>Export vers resultat.csv</p></div></div>
+      <div class="lib-card"><div class="lib-icon">#include</div><div class="lib-info"><h4>string</h4><p>Remplacement point→virgule</p></div></div>
+    </div>
+
+    <pre class="code-block"><span class="cmt">// ── Constante π ───────────────────────────────</span>
+<span class="kw">const</span> <span class="type">double</span> <span class="var">PI</span> = <span class="fn">acos</span>(<span class="num">-1.0</span>);
+
+<span class="cmt">// ── Fonction sous-intégrande ──────────────────</span>
+<span class="type">double</span> <span class="fn">f</span>(<span class="type">double</span> t, <span class="type">double</span> x) {
+    <span class="type">double</span> num = x - t,  deno = x + t;
+    <span class="kw">if</span> (deno &lt;= <span class="num">0</span>) <span class="kw">return</span> <span class="num">0.0</span>;
+    <span class="kw">return</span> <span class="fn">sqrt</span>(num / deno);
+}
+
+<span class="cmt">// ── Méthode des rectangles droits ────────────</span>
+<span class="type">double</span> <span class="fn">rectangle_droite</span>(<span class="type">double</span> a, <span class="type">double</span> b,
+                          <span class="type">int</span> N, <span class="type">double</span> x) {
+    <span class="type">double</span> sum = <span class="num">0.0</span>,  h = (b - a) / N;
+    <span class="kw">for</span> (<span class="type">int</span> k = <span class="num">1</span>; k &lt;= N; k++)
+        sum += <span class="fn">f</span>(a + k * h, x);
+    <span class="kw">return</span> h * sum;
+}
+
+<span class="cmt">// ── Solution analytique exacte ────────────────</span>
+<span class="type">double</span> <span class="fn">y_analy</span>(<span class="type">double</span> x) {
+    <span class="type">double</span> u = <span class="fn">sqrt</span>((x-<span class="num">1</span>) / (x+<span class="num">1</span>));
+    <span class="kw">return</span> -<span class="num">2.0</span>*x*<span class="fn">atan</span>(u)
+           + <span class="fn">sqrt</span>(x*x - <span class="num">1</span>)
+           + x*(PI/<span class="num">2</span> - <span class="num">1</span>);
+}</pre>
+
+    <div class="card" style="margin-top:1.5rem;">
+      <h3 style="font-size:14px;font-weight:500;color:var(--accent2);margin-bottom:1rem;">Astuce Excel — remplacement point → virgule</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.7;">
+        La version russe d'Excel utilise la virgule comme séparateur décimal.
+        Après écriture du fichier <code style="color:var(--accent3);font-family:var(--mono);">resultat.csv</code>,
+        le programme relit tout le contenu et remplace chaque <code style="font-family:var(--mono);">'.'</code>
+        par <code style="font-family:var(--mono);">','</code>, puis sauvegarde sous
+        <code style="font-family:var(--mono);color:var(--accent3);">resultat_final.csv</code>
+        — compatible Excel sans configuration.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ RÉSULTATS INTERACTIFS ══════ -->
+<section id="resultats">
+  <div class="fade-in">
+    <div class="s-label">05</div>
+    <h2 class="s-title">Résultats numériques interactifs</h2>
+    <p class="s-intro">
+      Explorez les résultats en temps réel. Sélectionnez N et ajustez x pour voir l'erreur absolue locale.
+    </p>
+
+    <div class="controls-bar">
+      <div class="ctrl-group">
+        <label>Valeur de x — <span id="xDisp" style="color:var(--accent);font-family:var(--mono);">x = 2.0</span></label>
+        <input type="range" id="xSlider" min="1" max="3" step="0.1" value="2">
+      </div>
+      <div class="ctrl-group">
+        <label>Nombre de subdivisions N</label>
+        <div class="n-btns">
+          <button class="n-btn active" data-n="5">N=5</button>
+          <button class="n-btn" data-n="10">N=10</button>
+          <button class="n-btn" data-n="20">N=20</button>
+          <button class="n-btn" data-n="50">N=50</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-card"><div class="m-lbl">Solution exacte</div><div class="m-val ok" id="mExact">—</div></div>
+      <div class="metric-card"><div class="m-lbl">Solution numérique</div><div class="m-val" id="mNum">—</div></div>
+      <div class="metric-card"><div class="m-lbl">Erreur locale</div><div class="m-val err" id="mErr">—</div></div>
+      <div class="metric-card"><div class="m-lbl">Erreur max globale Δmax</div><div class="m-val err" id="mMaxErr">—</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Courbes y_exact(x) vs y_num(x)</h3>
+        <div class="chart-wrap"><canvas id="curveChart" role="img" aria-label="Comparaison solution exacte et numérique">.</canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Convergence des erreurs Δmax(N)</h3>
+        <div class="chart-wrap"><canvas id="convChart" role="img" aria-label="Convergence des erreurs maximales selon N">.</canvas></div>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>x</th>
+            <th>Exact</th>
+            <th>N = 5</th>
+            <th>N = 10</th>
+            <th>N = 20</th>
+            <th>N = 50</th>
+            <th>Erreur (N sél.)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CONCLUSION ══════ -->
+<section id="conclusion">
+  <div class="fade-in">
+    <div class="s-label">06</div>
+    <h2 class="s-title">Conclusion</h2>
+    <p class="s-intro">
+      Les résultats confirment la convergence attendue de la méthode des rectangles droits
+      et la cohérence entre les solutions numérique et analytique.
+    </p>
+
+    <div class="err-table">
+      <div class="err-row header">
+        <div>N</div><div>Barre de convergence</div><div>Δmax</div>
+      </div>
+      <div class="err-row">
+        <div>5</div>
+        <div><div class="bar-wrap"><div class="bar" style="width:100%"></div></div></div>
+        <div>0.109900</div>
+      </div>
+      <div class="err-row">
+        <div>10</div>
+        <div><div class="bar-wrap"><div class="bar" style="width:49%"></div></div></div>
+        <div>0.053830</div>
+      </div>
+      <div class="err-row">
+        <div>20</div>
+        <div><div class="bar-wrap"><div class="bar" style="width:24%"></div></div></div>
+        <div>0.026438</div>
+      </div>
+      <div class="err-row">
+        <div>50</div>
+        <div><div class="bar-wrap"><div class="bar" style="width:9.5%"></div></div></div>
+        <div>0.010383</div>
+      </div>
+    </div>
+
+    <div class="concl-grid">
+      <div class="concl-card blue">
+        <h3>Convergence en O(h)</h3>
+        <p>Quand N double, l'erreur est divisée par ≈ 2. La méthode des rectangles droits est d'ordre 1 — cohérent avec la théorie.</p>
+      </div>
+      <div class="concl-card orange">
+        <h3>Précision vs coût</h3>
+        <p>N = 50 donne Δmax ≈ 0.0104, soit une précision au centième. Pour des applications pratiques, N = 20 est un bon compromis.</p>
+      </div>
+      <div class="concl-card green">
+        <h3>Valeur de l'analytique</h3>
+        <p>L'expression exacte permet de valider le code et de mesurer rigoureusement l'erreur pour chaque N, démontrant la fiabilité du calcul.</p>
+      </div>
+    </div>
+
+    <div class="formula-block" style="margin-top:2rem;">
+      <div class="f-label">Résultat final — formule analytique vérifiée</div>
+      <div class="f-eq">
+        y(x) = −2x · arctan(√((x−1)/(x+1)))  +  √(x²−1)  +  x(π/2 − 1)
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Rapport de pratique éducative · <span>Samake Ibrahim</span> · КубГУ · 2026</p>
+  <p style="margin-top:6px;">Direction 02.03.03 · Mathématiques et administration des systèmes d'information</p>
+</footer>
+
+<script>
+const PI = Math.acos(-1);
+const Ns = [5, 10, 20, 50];
+const xPoints = Array.from({length:21}, (_,i) => parseFloat((1 + i*0.1).toFixed(1)));
+
+function f(t, x) {
+  const d = x + t;
+  if (d <= 0) return 0;
+  const r = (x - t) / d;
+  return r < 0 ? 0 : Math.sqrt(r);
+}
+
+function numInt(N, x) {
+  let s = 0, h = 1/N;
+  for (let k = 1; k <= N; k++) s += f(k*h, x);
+  return h * s;
+}
+
+function exactSol(x) {
+  const u = Math.sqrt((x-1)/(x+1));
+  return -2*x*Math.atan(u) + Math.sqrt(x*x-1) + x*(PI/2-1);
+}
+
+const data = xPoints.map(x => ({
+  x, ex: exactSol(x),
+  nums: Ns.map(n => numInt(n, x))
+}));
+
+function maxErr(nIdx) {
+  return Math.max(...data.map(r => Math.abs(r.nums[nIdx] - r.ex)));
+}
+
+let curN = 5, curX = 2.0;
+let curveChart, convChart;
+
+function getNIdx() { return Ns.indexOf(curN); }
+
+function updateMetrics() {
+  const nIdx = getNIdx();
+  const ex = exactSol(curX);
+  const nm = numInt(curN, curX);
+  const er = Math.abs(nm - ex);
+  document.getElementById('mExact').textContent = ex.toFixed(6);
+  document.getElementById('mNum').textContent = nm.toFixed(6);
+  document.getElementById('mErr').textContent = er.toFixed(6);
+  document.getElementById('mMaxErr').textContent = maxErr(nIdx).toFixed(6);
+}
+
+function buildTable() {
+  const nIdx = getNIdx();
+  const rows = data.map(r => {
+    const err = Math.abs(r.nums[nIdx] - r.ex);
+    const hl = Math.abs(r.x - curX) < 0.001 ? ' class="highlight"' : '';
+    return `<tr${hl}>
+      <td>x = ${r.x.toFixed(1)}</td>
+      <td>${r.ex.toFixed(6)}</td>
+      ${r.nums.map(v=>`<td>${v.toFixed(6)}</td>`).join('')}
+      <td class="err-val">${err.toFixed(6)}</td>
+    </tr>`;
+  });
+  document.getElementById('tableBody').innerHTML = rows.join('');
+}
+
+const CHART_COLORS = {
+  exact: '#63b3ed',
+  n5: '#f6ad55',
+  n10: '#68d391',
+  n20: '#fc8181',
+  n50: '#b794f4',
+  grid: 'rgba(99,179,237,0.08)',
+  tick: '#64748b'
+};
+
+function buildCurveChart() {
+  const nIdx = getNIdx();
+  const ctx = document.getElementById('curveChart').getContext('2d');
+  const colors = ['#f6ad55','#68d391','#fc8181','#b794f4'];
+  curveChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: xPoints.map(x => x.toFixed(1)),
+      datasets: [
+        {
+          label: 'Exact',
+          data: data.map(r => r.ex),
+          borderColor: CHART_COLORS.exact,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: `N=${curN}`,
+          data: data.map(r => r.nums[nIdx]),
+          borderColor: colors[nIdx],
+          borderWidth: 2,
+          borderDash: [5,3],
+          pointRadius: 0,
+          tension: 0.2,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, bodyFont: { family: 'DM Mono' }, titleColor: '#e2e8f0', bodyColor: '#94a3b8', backgroundColor: '#141c2e', borderColor: '#1e3a5f', borderWidth: 1 } },
+      scales: {
+        x: { ticks: { color: CHART_COLORS.tick, font: { size: 11 }, maxTicksLimit: 7 }, grid: { color: CHART_COLORS.grid } },
+        y: { ticks: { color: CHART_COLORS.tick, font: { size: 11 } }, grid: { color: CHART_COLORS.grid } }
+      }
+    }
+  });
+}
+
+function buildConvChart() {
+  const errs = Ns.map((_,i) => maxErr(i));
+  const ctx = document.getElementById('convChart').getContext('2d');
+  convChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Ns.map(n => 'N='+n),
+      datasets: [{
+        data: errs,
+        backgroundColor: ['#f6ad5540','#68d39140','#fc818140','#b794f440'],
+        borderColor: ['#f6ad55','#68d391','#fc8181','#b794f4'],
+        borderWidth: 1.5,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => 'Δmax = '+c.raw.toFixed(6) }, backgroundColor: '#141c2e', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1e3a5f', borderWidth: 1 } },
+      scales: {
+        x: { ticks: { color: CHART_COLORS.tick }, grid: { display: false } },
+        y: { ticks: { color: CHART_COLORS.tick, font: { size: 11 } }, grid: { color: CHART_COLORS.grid }, title: { display: true, text: 'Δmax', color: CHART_COLORS.tick, font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function updateCurveChart() {
+  const nIdx = getNIdx();
+  const colors = ['#f6ad55','#68d391','#fc8181','#b794f4'];
+  curveChart.data.datasets[1].data = data.map(r => r.nums[nIdx]);
+  curveChart.data.datasets[1].label = `N=${curN}`;
+  curveChart.data.datasets[1].borderColor = colors[nIdx];
+  curveChart.update('none');
+}
+
+document.querySelectorAll('.n-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    curN = parseInt(btn.dataset.n);
+    updateMetrics();
+    buildTable();
+    updateCurveChart();
+  });
+});
+
+document.getElementById('xSlider').addEventListener('input', e => {
+  curX = parseFloat(e.target.value);
+  document.getElementById('xDisp').textContent = 'x = ' + curX.toFixed(1);
+  updateMetrics();
+  buildTable();
+});
+
+// ── NAV active state ──
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => observer.observe(s));
+
+// ── Fade in ──
+const fadeEls = document.querySelectorAll('.fade-in');
+const fadeObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => fadeObs.observe(el));
+
+// ── Init ──
+updateMetrics();
+buildTable();
+buildCurveChart();
+buildConvChart();
+</script>
+</body>
+</html>
