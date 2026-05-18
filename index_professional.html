@@ -11,6 +11,12 @@
       gtag('config', 'G-X2J46K2SNB');
     </script>
     
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#080c16">
@@ -627,7 +633,7 @@
         .cmt { color: #45475a; font-style: italic; }
         .num { color: #fab387; }
 
-        /* ═══════════════════════════════════════
+        /* ═════════════════════════════════════���═
            DASHBOARD — RESULTS
         ═══════════════════════════════════════ */
         .dashboard-card {
@@ -1275,7 +1281,7 @@
 <script>
 // ══════════════════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n)
-// ══════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════��════
 const i18n = {
     fr: {
         nav_home: 'Accueil', nav_objective: 'Objectif', nav_method: 'Méthode',
@@ -1319,7 +1325,7 @@ const i18n = {
         report_label: 'Отчет о практике',
         author: 'Автор', student: 'Студент 1-го курса',
         direction: 'Направление и курс',
-        course_sub: '1-й курс · Кафедра математического моделирования',
+        course_sub: '1-й курс · Кафедра математиче��кого моделирования',
         university: 'Учреждение · Год',
         univ_sub: 'Краснодар · Руководитель: С.Е. Рубцов',
         task_statement: 'Постановка задачи',
@@ -1342,7 +1348,7 @@ const i18n = {
         convergence_desc: 'Метод прямоугольников сходится к точному решению.',
         stability: 'Вычислительная стабильность',
         stability_desc: 'Для x ∈ [1;3] алгоритм остается стабильным.',
-        asymptotic: 'Асимптотическая производительность',
+        asymptotic: 'Асимптотичес��ая производительность',
         asymptotic_desc: 'Δmax ~ O(1/N) : ошибка уменьшается линейно.',
         copyright: '© 2026 Самаке Ибрахим · КубГУ · Краснодар',
         platform: 'Платформа научных вычислений'
@@ -1601,7 +1607,7 @@ document.querySelectorAll('.n-btn').forEach(btn => btn.addEventListener('click',
     updateDashboard();
 }));
 
-// ══════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════���
 // INIT
 // ══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
